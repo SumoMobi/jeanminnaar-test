@@ -54,6 +54,10 @@ namespace TypeAheadOrdering
 
         private static List<string> EmulateTheStoredProc(string searchTerm)
         {
+            //User can provide multiple search words.  Each word has to match something in the suggestions.  
+            //If the user provided a multi-word search, the results will only contain suggestions where each provided word matching at least
+            //one word in the suggestion.  Stated differently, the suggestions will have at least as many words as the user provided.
+
             List<string> suggestions = PopulateList();
             char[] delimiterChars = { ' ', ',', '.', ':', '\t' };
 
@@ -99,9 +103,6 @@ namespace TypeAheadOrdering
                 return suggestionsToOrder;
             }
 
-            //User can provide multiple search words.  Each word has to match something in the suggestions.  
-            //If the user provided a multi-word search, the results will only contain suggestions where each provided word matches at least
-            //one word in the suggestion.  Stated differently, the suggestions will have at least as many words as the user provided.
             //Weights are assigned as follows:
             //  First word matches first word in suggestion: 1000
             //  
@@ -134,20 +135,24 @@ namespace TypeAheadOrdering
                 for (int i = 0; i < suggestionsPlusWeights.Count; i++)
                 {
                     string[] suggestionWords = suggestionsPlusWeights[i].Suggestion.Split(delimiterChars, StringSplitOptions.RemoveEmptyEntries);
+                    suggestionsPlusWeights[i].numberOfWords = suggestionWords.Length;
                     for (int w = 0; w < suggestionWords.Length; w++)
                     {
                         int factor = maxSuggestionWords - w + 1;
                         if (suggestionWords[w].StartsWith(searchWords[t]))    //Should use case insensitive method.
                         {
                             suggestionsPlusWeights[i].Weight += (int)Math.Pow(weight + factor, 2);
-                            Console.WriteLine($"suggestion word: {w} {suggestionWords[w]}: searchWord: {t} {searchWords[t]} term weight: {weight} suggestionWord factor {factor}");
-                            Console.WriteLine($"{suggestionsPlusWeights[i].Suggestion:50}: {suggestionsPlusWeights[i].Weight}");
+                            //Console.WriteLine($"suggestion word: {w} {suggestionWords[w]}: searchWord: {t} {searchWords[t]} term weight: {weight} suggestionWord factor {factor}");
+                            //Console.WriteLine($"{suggestionsPlusWeights[i].Suggestion:50}: {suggestionsPlusWeights[i].Weight}");
                         }
                     }
                 }
             }
 
-            suggestionsPlusWeights = suggestionsPlusWeights.OrderByDescending(l => l.Weight).ThenBy(l => l.Suggestion).ToList();
+            suggestionsPlusWeights = suggestionsPlusWeights
+                .OrderByDescending(l => l.Weight)
+                .ThenBy(l => l.numberOfWords)
+                .ThenBy(l => l.Suggestion).ToList();
             Console.WriteLine("");
             Console.WriteLine("After sorting the returned suggestions");
             foreach (SuggestionPlusWeight spw in suggestionsPlusWeights)
