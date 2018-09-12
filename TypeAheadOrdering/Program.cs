@@ -120,8 +120,8 @@ namespace TypeAheadOrdering
                 }
             }
 
-            List<SuggestionPlusWeight> suggestionsPlusWeights = suggestionsToOrder
-                .Select(s => new SuggestionPlusWeight
+            List<SuggestionPlusWeightAndWordCount> suggestionsPlusWeightsAndWordCount = suggestionsToOrder
+                .Select(s => new SuggestionPlusWeightAndWordCount
                 {
                     Suggestion = s,
                     Weight = 0
@@ -132,16 +132,16 @@ namespace TypeAheadOrdering
             {
                 int weight = searchWords.Length - t - 1;  //Weight of the search term word.
 
-                for (int i = 0; i < suggestionsPlusWeights.Count; i++)
+                for (int i = 0; i < suggestionsPlusWeightsAndWordCount.Count; i++)
                 {
-                    string[] suggestionWords = suggestionsPlusWeights[i].Suggestion.Split(delimiterChars, StringSplitOptions.RemoveEmptyEntries);
-                    suggestionsPlusWeights[i].numberOfWords = suggestionWords.Length;
+                    string[] suggestionWords = suggestionsPlusWeightsAndWordCount[i].Suggestion.Split(delimiterChars, StringSplitOptions.RemoveEmptyEntries);
+                    suggestionsPlusWeightsAndWordCount[i].numberOfWords = suggestionWords.Length;
                     for (int w = 0; w < suggestionWords.Length; w++)
                     {
                         int factor = maxSuggestionWords - w + 1;
                         if (suggestionWords[w].StartsWith(searchWords[t]))    //Should use case insensitive method.
                         {
-                            suggestionsPlusWeights[i].Weight += (int)Math.Pow(weight + factor, 2);
+                            suggestionsPlusWeightsAndWordCount[i].Weight += (int)Math.Pow(weight + factor, 2);
                             //Console.WriteLine($"suggestion word: {w} {suggestionWords[w]}: searchWord: {t} {searchWords[t]} term weight: {weight} suggestionWord factor {factor}");
                             //Console.WriteLine($"{suggestionsPlusWeights[i].Suggestion:50}: {suggestionsPlusWeights[i].Weight}");
                         }
@@ -149,18 +149,18 @@ namespace TypeAheadOrdering
                 }
             }
 
-            suggestionsPlusWeights = suggestionsPlusWeights
+            suggestionsPlusWeightsAndWordCount = suggestionsPlusWeightsAndWordCount
                 .OrderByDescending(l => l.Weight)
                 .ThenBy(l => l.numberOfWords)
                 .ThenBy(l => l.Suggestion).ToList();
             Console.WriteLine("");
             Console.WriteLine("After sorting the returned suggestions");
-            foreach (SuggestionPlusWeight spw in suggestionsPlusWeights)
+            foreach (SuggestionPlusWeightAndWordCount spw in suggestionsPlusWeightsAndWordCount)
             {
                 Console.WriteLine($"{spw.Suggestion} {spw.Weight}");
             }
             Console.WriteLine("");
-            return suggestionsPlusWeights.Select(w => w.Suggestion).ToList();
+            return suggestionsPlusWeightsAndWordCount.Select(w => w.Suggestion).ToList();
         }
 
         private static List<string> PopulateList()

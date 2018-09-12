@@ -1,6 +1,6 @@
 ﻿namespace TypeAheadOrdering.DataModels
 {
-    public class SuggestionPlusWeight
+    public class SuggestionPlusWeightAndWordCount
     {
         public string Suggestion { get; set; }
         public int Weight { get; set; }
