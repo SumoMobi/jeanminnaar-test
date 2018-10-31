@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using KyruusExtract.Count;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -12,11 +13,99 @@ namespace KyruusExtract
     class Program
     {
         static string _token;
+        static int _currentPage;
+        static string _content;
+
         static HttpClient _httpClient = new HttpClient();
         static void Main(string[] args)
         {
-            Task task = Task.Run(() => Start());
-            task.Wait();
+            if (args.Length > 0)
+            {
+                Task task = Task.Run(() => StartWantedOnly());
+                try
+                {
+                    task.Wait();
+                }
+                catch(Exception ex)
+                {   //Here you have access to the current page and content received from Kyruus.
+
+                }
+            }
+            else
+            {
+                Task task = Task.Run(() => Start());
+                task.Wait();
+            }
+        }
+
+        static async Task<int> GetNumberOfProviders()
+        {
+            _token = await GetAuthTokenAsync();
+            string requestUrl = $"https://api.kyruus.com/pm/v8/banner/providers?per_page=0&page=0&facet=1";
+            HttpRequestMessage request = new HttpRequestMessage();
+            request.Method = HttpMethod.Get;
+            request.Headers.Add("Authorization", $"Bearer {_token}");
+            request.RequestUri = new Uri(requestUrl);
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
+            KyruusProviderCountResponse responseCount = JsonConvert.DeserializeObject<KyruusProviderCountResponse>(await response.Content.ReadAsStringAsync());
+            return responseCount.total_providers;
+        }
+        static async Task StartWantedOnly()
+        {
+            int numberOfProviders = await GetNumberOfProviders();
+            int pages = numberOfProviders / 100;
+            if (numberOfProviders % 100 > 0)
+            {
+                pages++;
+            }
+            string shuffeSeed = Guid.NewGuid().ToString();
+            using (TextWriter tw = new StreamWriter(@"C:\Temp\kyruusExtractWantedOnly.json", false))
+            {
+                tw.Write("[");
+                for(_currentPage = 1; _currentPage <= pages; _currentPage++)
+                {
+                    string requestUrl = $"https://api.kyruus.com/pm/v8/banner/providers?per_page=100&page={_currentPage}&shuffle_seed={shuffeSeed}&facet=1";
+                    HttpRequestMessage request = new HttpRequestMessage();
+                    request.Method = HttpMethod.Get;
+                    request.Headers.Add("Authorization", $"Bearer {_token}");
+                    request.RequestUri = new Uri(requestUrl);
+                    HttpResponseMessage response = await _httpClient.SendAsync(request);
+                    if (response.IsSuccessStatusCode == false)
+                    {
+                        throw new HttpRequestException($"Page call to Kyruus failed.  {response.ReasonPhrase}");
+                    }
+                    _content = await response.Content.ReadAsStringAsync();
+                    KyruusProviderPageResponse kyruusProviderPageResponse = JsonConvert.DeserializeObject<KyruusProviderPageResponse>(_content);
+                    List<RelaxedProvider> kyruusDocs = kyruusProviderPageResponse.providers
+                        .Where(k => k.show_in_pmc != "No" && k.locations != null && k.locations.Length != 0)
+                        .ToList();
+                    if (kyruusDocs.Count == 0)
+                    {
+                        continue;
+                    }
+                    Provider doc;
+                    for (int d = 0; d < kyruusDocs.Count; d++)
+                    {
+                        try
+                        {
+                            doc = kyruusDocs[d];
+                        }
+                        catch(Exception ex)
+                        {   //Skip he junk entry and continue;
+                            //TODO report the entry.
+                            continue;
+                        }
+                        string docText = JsonConvert.SerializeObject(doc);
+                        tw.Write(docText);
+                        if ((_currentPage == pages && d == kyruusDocs.Count - 1) == false)
+                        {   //Not the very last provider.  Add a comma after the provider entry.
+                            tw.Write(",");
+                        }
+                    }
+                }
+                tw.Write("]");
+                tw.Flush();
+            }
         }
 
         static async Task Start()
@@ -24,7 +113,7 @@ namespace KyruusExtract
             string shuffeSeed = Guid.NewGuid().ToString();
             int page = 1;
             _token = await GetAuthTokenAsync();
-            using (TextWriter tw = new StreamWriter(@"C:\kyruusExtract.json", false))
+            using (TextWriter tw = new StreamWriter(@"C:\Temp\kyruusExtract.json", false))
             {
                 tw.Write("[");
                 while (true)
@@ -56,7 +145,6 @@ namespace KyruusExtract
                 tw.Flush();
             }
         }
-
         private async static Task<string> GetAuthTokenAsync()
         {
             DateTimeOffset start = DateTime.UtcNow;
@@ -65,7 +153,7 @@ namespace KyruusExtract
             var keyValues = new List<KeyValuePair<string, string>>();
             keyValues.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
             keyValues.Add(new KeyValuePair<string, string>("client_id", "banner_website"));
-            keyValues.Add(new KeyValuePair<string, string>("client_secret", "need good key here"));
+            keyValues.Add(new KeyValuePair<string, string>("client_secret", "68fca452c41b49999120ef052fe49815"));
 
             FormUrlEncodedContent formFields = new FormUrlEncodedContent(keyValues);
             string formDataText = await formFields.ReadAsStringAsync();
