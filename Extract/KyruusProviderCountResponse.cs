@@ -1,4 +1,4 @@
-﻿namespace KyruusExtract.Count
+﻿namespace Extract.Count
 {
     public class KyruusProviderCountResponse
     {
