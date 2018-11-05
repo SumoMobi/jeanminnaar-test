@@ -29,7 +29,7 @@ namespace AzureSearch
                     task = Task.Run(() => Extract.Downloader.ExtractWantedOnly());
                     break;
                 case "ui":
-                    task = Task.Run(() => UploadIndex.Loader.UpdateIndex());
+                    task = Task.Run(() => UploadIndex.Loader.Update());
                     break;
                 default:
                     Console.WriteLine("Provide one of the following commands:");

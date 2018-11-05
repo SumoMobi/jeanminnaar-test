@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Extract\Extract.csproj" />
-    <ProjectReference Include="..\UploadIndex\UploadIndex.csproj" />
+    <ProjectReference Include="..\AzureSearchExtract\AzureSearchExtract.csproj" />
+    <ProjectReference Include="..\AzureSearchUploadIndex\AzureSearchUploadIndex.csproj" />
   </ItemGroup>
 
 </Project>

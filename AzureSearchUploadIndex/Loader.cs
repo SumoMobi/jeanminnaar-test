@@ -5,7 +5,7 @@ namespace UploadIndex
 {
     public class Loader
     {
-        public static async Task UpdateIndex()
+        public static async Task Update()
         {
 
         }
