@@ -1,5 +1,5 @@
-﻿using Common;
-using Extract.Count;
+﻿using AzureSearch.Common;
+using AzureSearch.Extract.Count;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Extract
+namespace AzureSearch.Extract
 {
     public class Downloader
     {

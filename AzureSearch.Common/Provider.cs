@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Common
+namespace AzureSearch.Common
 {
     public class Provider
     {

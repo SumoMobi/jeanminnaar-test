@@ -1,4 +1,4 @@
-﻿namespace Extract.Count
+﻿namespace AzureSearch.Extract.Count
 {
     public class KyruusProviderCountResponse
     {

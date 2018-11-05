@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzureSearchCommon\AzureSearchCommon.csproj" />
+    <ProjectReference Include="..\AzureSearch.Common\AzureSearch.Common.csproj" />
   </ItemGroup>
 
 </Project>
