@@ -70,7 +70,7 @@ namespace AzureSearch.Extract
                         {
                             doc = kyruusDocs[d];
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {   //Skip he junk entry and continue;
                             //TODO report the entry.
                             continue;
