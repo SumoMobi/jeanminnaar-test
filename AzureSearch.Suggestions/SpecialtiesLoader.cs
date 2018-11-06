@@ -1,5 +1,6 @@
 ﻿using AzureSearch.Common;
 using AzureSearch.CosmosDb;
+using Microsoft.Azure.Search;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,7 @@ namespace AzureSearch.Suggestions
 
     public class SpecialtiesLoader
     {
-        public static void Update()
+        public static void Update(string apiKey)
         {
             DateTime startDateTime = DateTime.Now;
 
@@ -82,11 +83,16 @@ namespace AzureSearch.Suggestions
 
             //Populate specialties index.
             startDateTime = DateTime.Now;
-            PopulateSpecialtiesIndex(specialtiesAliasesAndTypes);
+            PopulateSpecialtiesIndex(specialtiesAliasesAndTypes, apiKey);
             Console.WriteLine($"PopulateSpecialtiesIndex response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
         }
 
+        static void PopulateSpecialtiesIndex(List<SpecialtyAliasAndType> specialtiesAliasesAndTypes, string apiKey)
+        {
+            SearchServiceClient serviceClient = new SearchServiceClient("specialties", new SearchCredentials(apiKey));
+
+        }
         private static void RecreateSuggestionIndexes()
         {
             //Drop the indexes

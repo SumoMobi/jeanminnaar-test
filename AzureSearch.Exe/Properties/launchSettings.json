@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AzureSearchExe": {
+      "commandName": "Project",
+      "commandLineArgs": "us"
+    }
+  }
+}
