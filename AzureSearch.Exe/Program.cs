@@ -35,7 +35,8 @@ namespace AzureSearch.Exe
                     break;
                 case "us":
                     string apiKey = ConfigurationManager.AppSettings["AzureSearchApiKey"];
-                    task = Task.Run(() => Suggestions.SpecialtiesLoader.Update(apiKey));
+                    string serviceName = ConfigurationManager.AppSettings["ServiceName"];
+                    task = Task.Run(() => Suggestions.SpecialtiesLoader.Update(apiKey, serviceName));
                     break;
                 default:
                     Console.WriteLine("Provide one of the following commands:");
@@ -53,9 +54,10 @@ namespace AzureSearch.Exe
                     task.Wait();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Console.WriteLine(ex.Message);
+                Console.ReadLine();
             }
         }
 
