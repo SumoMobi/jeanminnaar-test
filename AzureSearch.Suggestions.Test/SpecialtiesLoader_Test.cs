@@ -33,17 +33,17 @@ namespace AzureSearch.Suggestions.Test
             List<SpecialtyAliasAndType> specialtiesAliasesAndTypes;
 
             //Empty provider list.
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(0, specialtiesAliasesAndTypes.Count);
 
             //Single provider with null components.
             providers.Add(p1);
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(0, specialtiesAliasesAndTypes.Count);
 
             //Single provider with empty specialties collection.
             p1.specialties = new Specialty[0];
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(0, specialtiesAliasesAndTypes.Count);
 
             //Single provider with single item in specialties collection.  Only a specialty.  No aliases.
@@ -52,7 +52,7 @@ namespace AzureSearch.Suggestions.Test
             s1.subspecialty = null;
             sList1 = new List<Specialty>() { s1 };
             p1.specialties = sList1.ToArray();
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(1, specialtiesAliasesAndTypes.Count);
             //One alias
             index = 0;
@@ -67,7 +67,7 @@ namespace AzureSearch.Suggestions.Test
             s1.aliases = new Alias[1] { a1 };
             sList1 = new List<Specialty>() { s1 };
             p1.specialties = sList1.ToArray();
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(1, specialtiesAliasesAndTypes.Count);
             //One alias
             index = 0;
@@ -81,7 +81,7 @@ namespace AzureSearch.Suggestions.Test
             s1.aliases = null;
             sList1 = new List<Specialty>() { s1 };
             p1.specialties = sList1.ToArray();
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(1, specialtiesAliasesAndTypes.Count);
             index = 0;
             Assert.AreEqual("subs", specialtiesAliasesAndTypes[index].Alias);
@@ -96,7 +96,7 @@ namespace AzureSearch.Suggestions.Test
             s1.aliases = new Alias[2] { a1, a2 };
             sList1 = new List<Specialty>() { s1 };
             p1.specialties = sList1.ToArray();
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(3, specialtiesAliasesAndTypes.Count);
 
             index = 0;
@@ -120,7 +120,7 @@ namespace AzureSearch.Suggestions.Test
             s1.aliases = new Alias[2] { a1, a2 };
             sList1 = new List<Specialty>() { s1 };
             p1.specialties = sList1.ToArray();
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(2, specialtiesAliasesAndTypes.Count);
             //Two aliases
             index = 0;
@@ -140,7 +140,7 @@ namespace AzureSearch.Suggestions.Test
             s1.aliases = new Alias[2] { a1, a2 };
             sList1 = new List<Specialty>() { s1 };
             p1.specialties = sList1.ToArray();
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Assert.AreEqual(2, specialtiesAliasesAndTypes.Count);
             //Two aliases
             index = 0;
@@ -166,7 +166,7 @@ namespace AzureSearch.Suggestions.Test
             s2.aliases = new Alias[2] { a3, a4 };
             sList1 = new List<Specialty>() { s1, s2 };
             p1.specialties = sList1.ToArray();
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
 
             Assert.AreEqual(6, specialtiesAliasesAndTypes.Count);
 
@@ -226,7 +226,7 @@ namespace AzureSearch.Suggestions.Test
             p2.specialties = sList2.ToArray();
             providers.Add(p2);
 
-            specialtiesAliasesAndTypes = SpecialtiesLoader.GetAllSpecialitiesAliasesAndTypes(providers);
+            specialtiesAliasesAndTypes = SpecialtiesLoader.AccumulateAllSpecialitiesAliasesAndTypes(providers);
 
             Assert.AreEqual(12, specialtiesAliasesAndTypes.Count);
             index = 0;

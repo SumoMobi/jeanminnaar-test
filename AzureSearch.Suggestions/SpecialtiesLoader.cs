@@ -75,7 +75,7 @@ namespace AzureSearch.Suggestions
 
             //Get the complete list of aliases and specialties.
             startDateTime = DateTime.Now;
-            List<SpecialtyAliasAndType> specialtiesAliasesAndTypes = GetAllSpecialitiesAliasesAndTypes(providers);
+            List<SpecialtyAliasAndType> specialtiesAliasesAndTypes = AccumulateAllSpecialitiesAliasesAndTypes(providers);
             Console.WriteLine($"{specialtiesAliasesAndTypes.Count} specialtiesAliasesAndTypes.  Response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
             //De-dupe the list and remove specialties for where we have aliases.
@@ -114,20 +114,21 @@ namespace AzureSearch.Suggestions
             }
             SearchServiceClient serviceClient = new SearchServiceClient(serviceName, new SearchCredentials(apiKey));
             ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("specialties");
-            int loadSize = 100;
-            int loads = specialtiesAliasesAndTypes.Count / loadSize;
-            if (specialtiesAliasesAndTypes.Count % loadSize > 0)
+            Console.WriteLine($"API Version {indexClient.ApiVersion}");
+            int chunkSize = 100;
+            int chunks = specialtiesAliasesAndTypes.Count / chunkSize;
+            if (specialtiesAliasesAndTypes.Count % chunkSize > 0)
             {
-                loads++;
+                chunks++;
             }
-            for (int l = 0; l < loads; l++)
+            for (int l = 0; l < chunks; l++)
             {
-                int max = loadSize;
-                if (l == loads)
+                int max = chunkSize;
+                if (l == chunks)
                 {
-                    max = specialtiesAliasesAndTypes.Count - (loadSize * (l - 1));
+                    max = specialtiesAliasesAndTypes.Count - (chunkSize * (l - 1));
                 }
-                IndexBatch<SpecialtyIndex> batch = IndexBatch.New(indexActions.Skip(l * loadSize).Take(max));
+                IndexBatch<SpecialtyIndex> batch = IndexBatch.New(indexActions.Skip(l * chunkSize).Take(max));
                 //Instead of IndexBatch.New() I could have used IndexBatc.Upload() and then the Upload part is not required in the actions list.
                 try
                 {
@@ -176,8 +177,6 @@ namespace AzureSearch.Suggestions
                 }
             }
             
-            //TODO add statistics and run times.
-
             if (specialtyEntriesToRemove.Count == 0)
             {
                 return specialtiesAliasesAndTypes;
@@ -192,7 +191,7 @@ namespace AzureSearch.Suggestions
             List<SpecialtyAliasAndType> dedupeList = specialtiesAliasesAndTypes.Distinct(new SpecialtyAliasAndTypeComparer()).ToList();
             return dedupeList;
         }
-        public static List<SpecialtyAliasAndType> GetAllSpecialitiesAliasesAndTypes(List<Provider> providers)
+        public static List<SpecialtyAliasAndType> AccumulateAllSpecialitiesAliasesAndTypes(List<Provider> providers)
         {
             List<SpecialtyAliasAndType> specialtiesAliasesAndTypes = new List<SpecialtyAliasAndType>();
             for (int i = 0; i < providers.Count; i++)
@@ -217,12 +216,15 @@ namespace AzureSearch.Suggestions
                     }
                     if (string.IsNullOrWhiteSpace(s.subspecialty) == false && s.specialty != s.subspecialty)
                     {   //Have a subspecialty that is different from specialty.  Treat subspecialty same as alias.
-                        specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
+                        if (s.specialty != s.subspecialty)
                         {
-                            Alias = s.subspecialty,
-                            EntryType = EntryTypes.Subspecialty,
-                            Specialty = s.specialty
-                        });
+                            specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
+                            {
+                                Alias = s.subspecialty,
+                                EntryType = EntryTypes.Subspecialty,
+                                Specialty = s.specialty
+                            });
+                        }
                     }
 
                     if (s.aliases == null)
@@ -231,12 +233,15 @@ namespace AzureSearch.Suggestions
                     }
                     foreach (Alias a in s.aliases)
                     {
-                        specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
+                        if (s.specialty != a.name)
                         {
-                            Alias = a.name,
-                            EntryType = EntryTypes.Alias,
-                            Specialty = s.specialty
-                        });
+                            specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
+                            {
+                                Alias = a.name,
+                                EntryType = EntryTypes.Alias,
+                                Specialty = s.specialty
+                            });
+                        }
                     }
                 }
             }
