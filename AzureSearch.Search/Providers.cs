@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AzureSearch.Search
 {
-    public class Loader
+    public class Providers
     {
         public static async Task Update()
         {

@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AzureSearch;
 
 namespace AzureSearch.Exe
 {
@@ -25,18 +26,18 @@ namespace AzureSearch.Exe
             switch (command)
             {
                 case "ea":
-                    task = Task.Run(() => Extract.Downloader.ExtractAll());
+                    task = Task.Run(() => Source.Kyruus.ExtractAll());
                     break;
                 case "ewa":
-                    task = Task.Run(() => Extract.Downloader.ExtractWantedOnly());
+                    task = Task.Run(() => Source.Kyruus.ExtractWantedOnly());
                     break;
                 case "ui":
-                    task = Task.Run(() => Search.Loader.Update());
+                    task = Task.Run(() => Loader.Specialties.Update());
                     break;
                 case "us":
                     string apiKey = ConfigurationManager.AppSettings["AzureSearchApiKey"];
                     string serviceName = ConfigurationManager.AppSettings["ServiceName"];
-                    task = Task.Run(() => Suggestions.SpecialtiesLoader.Update(apiKey, serviceName));
+                    task = Task.Run(() => Suggestions.Specialties.Update(apiKey, serviceName));
                     break;
                 default:
                     Console.WriteLine("Provide one of the following commands:");

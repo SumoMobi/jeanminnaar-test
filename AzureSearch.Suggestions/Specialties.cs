@@ -63,7 +63,7 @@ namespace AzureSearch.Suggestions
         public string specialty { get; set; }
         public string alias { get; set; }
     }
-    public class SpecialtiesLoader
+    public class Specialties
     {
         public static void Update(string apiKey, string serviceName)
         {
@@ -113,7 +113,7 @@ namespace AzureSearch.Suggestions
                 });
             }
             SearchServiceClient serviceClient = new SearchServiceClient(serviceName, new SearchCredentials(apiKey));
-            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("specialties");
+            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("specialties2");
             Console.WriteLine($"API Version {indexClient.ApiVersion}");
             int chunkSize = 100;
             int chunks = specialtiesAliasesAndTypes.Count / chunkSize;

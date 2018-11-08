@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AzureSearch.Extract
 {
-    public class Downloader
+    public class Kyruus
     {
         static string _token;
         static int _currentPage;
