@@ -94,54 +94,21 @@ namespace AzureSearch.Loader
 
             //Populate specialties index.
             startDateTime = DateTime.Now;
-            PopulateSpecialtiesIndex(specialtiesAliasesAndTypes, apiKey, serviceName);
+            SpecialtyIndex[] specialties = new SpecialtyIndex[specialtiesAliasesAndTypes.Count];
+            for (int i = 0; i < specialtiesAliasesAndTypes.Count; i++)
+            {
+                specialties[i] = new SpecialtyIndex
+                {
+                    alias = specialtiesAliasesAndTypes[i].Alias,
+                    id = (i + 1).ToString(),
+                    specialty = specialtiesAliasesAndTypes[i].Specialty
+                };
+            }
+            IndexLoader.MergeOrUpload(specialties.ToList(), apiKey, serviceName, "specialties");
             Console.WriteLine($"PopulateSpecialtiesIndex response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
         }
 
-        static void PopulateSpecialtiesIndex(List<SpecialtyAliasAndType> specialtiesAliasesAndTypes, string apiKey, string serviceName)
-        {
-            IndexAction<SpecialtyIndex>[] indexActions = new IndexAction<SpecialtyIndex>[specialtiesAliasesAndTypes.Count];
-//            List<SpecialtyIndex> specialtyIndexEntries = new List<SpecialtyIndex>();
-            for (int i = 0; i < specialtiesAliasesAndTypes.Count; i++)
-            {
-                indexActions[i] = IndexAction.Upload(new SpecialtyIndex
-                { 
-                    alias = specialtiesAliasesAndTypes[i].Alias,
-                    id = (i+1).ToString(),
-                    specialty = specialtiesAliasesAndTypes[i].Specialty
-                });
-            }
-            SearchServiceClient serviceClient = new SearchServiceClient(serviceName, new SearchCredentials(apiKey));
-            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("specialties2");
-            Console.WriteLine($"API Version {indexClient.ApiVersion}");
-            int chunkSize = 100;
-            int chunks = specialtiesAliasesAndTypes.Count / chunkSize;
-            if (specialtiesAliasesAndTypes.Count % chunkSize > 0)
-            {
-                chunks++;
-            }
-            for (int l = 0; l < chunks; l++)
-            {
-                int max = chunkSize;
-                if (l == chunks)
-                {
-                    max = specialtiesAliasesAndTypes.Count - (chunkSize * (l - 1));
-                }
-                IndexBatch<SpecialtyIndex> batch = IndexBatch.New(indexActions.Skip(l * chunkSize).Take(max));
-                //Instead of IndexBatch.New() I could have used IndexBatc.Upload() and then the Upload part is not required in the actions list.
-                try
-                {
-//                    Console.WriteLine($"{indexClient.Documents.Count()} docs in the index");
-                    DocumentIndexResult result = indexClient.Documents.Index(batch);
-                }
-                catch(IndexBatchException ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-
-        }
         private static void RecreateSuggestionIndexes()
         {
             Console.WriteLine("First need to drop and create the Specialties index.  Hit ENTER when done.");

@@ -7,7 +7,7 @@ namespace AzureSearch.Loader
 {
     public class Providers
     {
-        public static async Task Upload()
+        public static async Task Upload(string apiKey, string serviceName)
         {
             throw new NotImplementedException();
         }

@@ -22,6 +22,8 @@ namespace AzureSearch.Exe
                 Console.WriteLine("Hit any key to continue");
                 Console.Read();
             }
+            string apiKey = ConfigurationManager.AppSettings["AzureSearchApiKey"];
+            string serviceName = ConfigurationManager.AppSettings["ServiceName"];
             string command = args[0];
             command = command.ToLower();
             Task task = null;
@@ -34,24 +36,22 @@ namespace AzureSearch.Exe
                     task = Task.Run(() => AzureSearch.Source.Kyruus.ExtractWantedOnly());
                     break;
                 case "ul":
-                    task = Task.Run(() => AzureSearch.Loader.Locations.Upload());
+                    task = Task.Run(() => AzureSearch.Loader.Locations.Upload(apiKey, serviceName));
                     break;
                 case "up":
-                    task = Task.Run(() => AzureSearch.Loader.Providers.Upload());
+                    task = Task.Run(() => AzureSearch.Loader.Providers.Upload(apiKey, serviceName));
                     break;
                 case "us":
-                    string apiKey = ConfigurationManager.AppSettings["AzureSearchApiKey"];
-                    string serviceName = ConfigurationManager.AppSettings["ServiceName"];
                     task = Task.Run(() => AzureSearch.Loader.Specialties.Upload(apiKey, serviceName));
                     break;
                 case "uc":
-                    task = Task.Run(() => AzureSearch.Loader.Conditions.Upload());
+                    task = Task.Run(() => AzureSearch.Loader.Conditions.Upload(apiKey, serviceName));
                     break;
                 case "ui":
-                    task = Task.Run(() => AzureSearch.Loader.Insurances.Upload());
+                    task = Task.Run(() => AzureSearch.Loader.Insurances.Upload(apiKey, serviceName));
                     break;
                 case "un":
-                    task = Task.Run(() => AzureSearch.Loader.Names.Upload());
+                    task = Task.Run(() => AzureSearch.Loader.Names.Upload(apiKey, serviceName));
                     break;
                 default:
                     Console.WriteLine("Provide one of the following commands:");
@@ -68,10 +68,12 @@ namespace AzureSearch.Exe
                 {
                     task.Wait();
                 }
+                Console.WriteLine("Hit ENTER to continue.");
+                Console.ReadLine();
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.Message + ".  Hit ENTER to continue.");
                 Console.ReadLine();
             }
         }
