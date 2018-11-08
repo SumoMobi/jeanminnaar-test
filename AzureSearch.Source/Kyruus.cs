@@ -1,5 +1,5 @@
 ﻿using AzureSearch.Common;
-using AzureSearch.Extract.Count;
+using AzureSearch.Source.Count;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace AzureSearch.Extract
+namespace AzureSearch.Source
 {
     public class Kyruus
     {

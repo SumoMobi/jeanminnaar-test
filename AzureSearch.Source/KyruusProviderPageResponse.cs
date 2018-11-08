@@ -1,7 +1,7 @@
 ﻿using AzureSearch.Common;
 using System.Collections.Generic;
 
-namespace AzureSearch.Extract
+namespace AzureSearch.Source
 {
     public class KyruusProviderPageResponse
     {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Configuration;
-using System.Net.Http;
 using System.Threading.Tasks;
-using AzureSearch;
 
 namespace AzureSearch.Exe
 {
@@ -15,8 +13,12 @@ namespace AzureSearch.Exe
                 Console.WriteLine("Provide one of the following commands:");
                 Console.WriteLine("\t ea (to extract all kyruus data to disk)");
                 Console.WriteLine("\t ewa (to extract just those kyruus providers we want)");
-                Console.WriteLine("\t ui (to upload the Azure Search index data)");
-                Console.WriteLine("\t us (to upload the Azure Search suggestions data)");
+                Console.WriteLine("\t ul (to upload the Azure Search locations data)");
+                Console.WriteLine("\t up (to upload the Azure Search's providers index)");
+                Console.WriteLine("\t us (to upload the Azure Search specialties data)");
+                Console.WriteLine("\t uc (to upload the Azure Search conditions data)");
+                Console.WriteLine("\t ui (to upload the Azure Search insurances data)");
+                Console.WriteLine("\t un (to upload the Azure Search names data)");
                 Console.WriteLine("Hit any key to continue");
                 Console.Read();
             }
@@ -26,18 +28,30 @@ namespace AzureSearch.Exe
             switch (command)
             {
                 case "ea":
-                    task = Task.Run(() => Source.Kyruus.ExtractAll());
+                    task = Task.Run(() => AzureSearch.Source.Kyruus.ExtractAll());
                     break;
                 case "ewa":
-                    task = Task.Run(() => Source.Kyruus.ExtractWantedOnly());
+                    task = Task.Run(() => AzureSearch.Source.Kyruus.ExtractWantedOnly());
                     break;
-                case "ui":
-                    task = Task.Run(() => Loader.Specialties.Update());
+                case "ul":
+                    task = Task.Run(() => AzureSearch.Loader.Locations.Upload());
+                    break;
+                case "up":
+                    task = Task.Run(() => AzureSearch.Loader.Providers.Upload());
                     break;
                 case "us":
                     string apiKey = ConfigurationManager.AppSettings["AzureSearchApiKey"];
                     string serviceName = ConfigurationManager.AppSettings["ServiceName"];
-                    task = Task.Run(() => Suggestions.Specialties.Update(apiKey, serviceName));
+                    task = Task.Run(() => AzureSearch.Loader.Specialties.Upload(apiKey, serviceName));
+                    break;
+                case "uc":
+                    task = Task.Run(() => AzureSearch.Loader.Conditions.Upload());
+                    break;
+                case "ui":
+                    task = Task.Run(() => AzureSearch.Loader.Insurances.Upload());
+                    break;
+                case "un":
+                    task = Task.Run(() => AzureSearch.Loader.Names.Upload());
                     break;
                 default:
                     Console.WriteLine("Provide one of the following commands:");

@@ -3,13 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AzureSearch.Search
+namespace AzureSearch.Loader
 {
     public class Providers
     {
-        public static async Task Update()
+        public static async Task Upload()
         {
-
+            throw new NotImplementedException();
         }
 
     }

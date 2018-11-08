@@ -10,9 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzureSearch.Extract\AzureSearch.Source.csproj" />
-    <ProjectReference Include="..\AzureSearch.Search\AzureSearch.Search.csproj" />
-    <ProjectReference Include="..\AzureSearch.Suggestions\AzureSearch.Loader.csproj" />
+    <ProjectReference Include="..\AzureSearch.Loader\AzureSearch.Loader.csproj" />
+    <ProjectReference Include="..\AzureSearch.Source\AzureSearch.Source.csproj" />
   </ItemGroup>
 
 </Project>

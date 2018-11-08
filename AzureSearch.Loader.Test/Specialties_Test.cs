@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using AzureSearch.Common;
 using System;
 
-namespace AzureSearch.Suggestions.Test
+namespace AzureSearch.Loader.Test
 {
     [TestClass]
     public class Specialties_Test

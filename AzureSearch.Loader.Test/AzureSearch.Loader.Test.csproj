@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzureSearch.Suggestions\AzureSearch.Loader.csproj" />
+    <ProjectReference Include="..\AzureSearch.Loader\AzureSearch.Loader.csproj" />
   </ItemGroup>
 
 </Project>

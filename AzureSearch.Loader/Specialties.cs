@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AzureSearch.Suggestions
+namespace AzureSearch.Loader
 {
     public class SpecialtyAliasAndType
     {
@@ -65,7 +65,7 @@ namespace AzureSearch.Suggestions
     }
     public class Specialties
     {
-        public static void Update(string apiKey, string serviceName)
+        public static void Upload(string apiKey, string serviceName)
         {
             DateTime startDateTime = DateTime.Now;
 
