@@ -9,12 +9,12 @@ namespace AzureSearch.Loader
 {
     public class IndexLoader
     {
-        public static void MergeOrUpload<T>(List<T> indexDataList, string apiKey, string serviceName, string indexName) where T : class
+        public static void MergeOrUpload<T>(List<T> indexDataList, string apiKey, string serviceName, string indexName, int maxChunkSize = 500) where T : class
         {
             SearchServiceClient serviceClient = new SearchServiceClient(serviceName, new SearchCredentials(apiKey));
             ISearchIndexClient indexClient = serviceClient.Indexes.GetClient(indexName);
             Console.WriteLine($"API Version {indexClient.ApiVersion}");
-            int chunkSize = 500;
+            int chunkSize = maxChunkSize;
             int chunks = indexDataList.Count / chunkSize;
             if (indexDataList.Count % chunkSize > 0)
             {

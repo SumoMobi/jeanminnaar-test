@@ -4,7 +4,6 @@ using Microsoft.Spatial;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace AzureSearch.Loader
 {
@@ -47,12 +46,18 @@ namespace AzureSearch.Loader
             List<Location> locations = new List<Location>();
             foreach (Provider p in providers)
             {
-                foreach (AzureSearch.Common.Location l in p.locations)
+                foreach (Common.Location l in p.locations)
                 {
+                    if (l.coordinates == null)
+                    {
+                        continue;
+                    }
                     locations.Add(new Location
                     {
                         coordinates = GeographyPoint.Create(l.coordinates.lat, l.coordinates.lon),
-                        id = l.id
+                        id = l.id  //Kyruus has multiple 'id's for the same external_id.  But if we use the external_id and that changes (planned to switch over to Cerner's ID),
+                                   //we have to rebuild both locations and providers indexes and coordinate such with Sitecore releases.  Can't use coordinates either to ID a facility 
+                                   //since that can change slightly too.  Keep in mind that we need to attach the IDs to the providers too...
                     });
                 }
             }
