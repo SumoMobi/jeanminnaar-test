@@ -1,6 +1,5 @@
 ﻿using AzureSearch.Common;
 using AzureSearch.CosmosDb;
-using Microsoft.Spatial;
 using System;
 using System.Collections.Generic;
 using System.Linq;
