@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AzureSearch.Loader\AzureSearch.Loader.csproj" />
+    <ProjectReference Include="..\AzureSearch.Performance\AzureSearch.Performance.csproj" />
     <ProjectReference Include="..\AzureSearch.Source\AzureSearch.Source.csproj" />
   </ItemGroup>
 

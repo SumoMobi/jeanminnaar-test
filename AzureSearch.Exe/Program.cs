@@ -11,9 +11,15 @@ namespace AzureSearch.Exe
             if (args.Length == 0 || args.Length > 1)
             {
                 ShowHelp();
+                return;
             }
             string apiKey = ConfigurationManager.AppSettings["AzureSearchApiKey"];
             string serviceName = ConfigurationManager.AppSettings["ServiceName"];
+            string storageAccountName = ConfigurationManager.AppSettings["storageAccountName"];
+            string storageAccountKey = ConfigurationManager.AppSettings["storageAccountKey"];
+            string Dev4CosmosKey = ConfigurationManager.AppSettings["Dev4CosmosKey"];
+            string Dev4CosmosUrl = ConfigurationManager.AppSettings["Dev4CosmosUrl"];
+
             string command = args[0];
             command = command.ToLower();
             Task task = null;
@@ -42,6 +48,24 @@ namespace AzureSearch.Exe
                     break;
                 case "un":
                     task = Task.Run(() => Loader.Names.Upload(apiKey, serviceName));
+                    break;
+                case "pca":
+                    Performance.CosmosDb.GetDocuments(Dev4CosmosUrl, Dev4CosmosKey);    //3.5 seconds
+                    break;
+                case "pcs":
+                    Performance.CosmosDb.GetDocumentsSpecificElements(Dev4CosmosUrl, Dev4CosmosKey);    //3.4 seconds
+                    break;
+                case "pcss":
+                    task = Task.Run(() => Performance.CosmosDb.GetDocumentsStoredProcedure(Dev4CosmosUrl, Dev4CosmosKey));    //3.0 seconds
+                    break;
+                case "pcssp":
+                    task = Task.Run(() => Performance.CosmosDb.GetDocumentsSpecificElementsInParallel(Dev4CosmosUrl, Dev4CosmosKey));    //4.6 seconds
+                    break;
+                case "pb":
+                    Performance.BlobStorage.GetDocuments(storageAccountKey, storageAccountName);    //7.0 seconds.  Goes up to 12 seconds at times.
+                    break;
+                case "pbp":
+                    Performance.BlobStorage.GetDocumentsInParallel(storageAccountKey, storageAccountName);    //4.0 seconds.  Goes up to 26 seconds at times.
                     break;
                 default:
                     ShowHelp();
@@ -73,6 +97,12 @@ namespace AzureSearch.Exe
             Console.WriteLine("\t uc (to upload the Azure Search conditions data)");
             Console.WriteLine("\t ui (to upload the Azure Search insurances data)");
             Console.WriteLine("\t un (to upload the Azure Search names data)");
+            Console.WriteLine("\t pca (performance against Cosmos bring back all nodes)");
+            Console.WriteLine("\t pcs (performance against Cosmos bring back select nodes)");
+            Console.WriteLine("\t pcss (performance against Cosmos bring back select nodes using stored procedure)");
+            Console.WriteLine("\t pcssp (performance against Cosmos bring back select nodes using 5 threads in parallel)");
+            Console.WriteLine("\t pb (performance against Blob Storage)");
+            Console.WriteLine("\t pbp (performance against Blob Storage using 5 threads in parallel)");
             Console.WriteLine("Hit ENTER to continue");
             Console.ReadLine();
         }
