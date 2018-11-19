@@ -56,14 +56,14 @@ namespace AzureSearch.Source
                     }
                     _content = await response.Content.ReadAsStringAsync();
                     KyruusProviderPageResponse kyruusProviderPageResponse = JsonConvert.DeserializeObject<KyruusProviderPageResponse>(_content);
-                    List<RelaxedProvider> kyruusDocs = kyruusProviderPageResponse.providers
+                    List<RelaxedKyruusDataStructure> kyruusDocs = kyruusProviderPageResponse.providers
                         .Where(k => k.show_in_pmc != "No" && k.locations != null && k.locations.Length != 0)
                         .ToList();
                     if (kyruusDocs.Count == 0)
                     {
                         continue;
                     }
-                    Provider doc;
+                    KyruusDataStructure doc;
                     for (int d = 0; d < kyruusDocs.Count; d++)
                     {
                         try

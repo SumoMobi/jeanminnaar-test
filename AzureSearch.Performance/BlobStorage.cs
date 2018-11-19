@@ -19,12 +19,12 @@ namespace AzureSearch.Performance
             CloudStorageAccount cloudStorageAccount = new CloudStorageAccount(storageCredentials, useHttps: true);
             CloudBlobClient blobClient = cloudStorageAccount.CreateCloudBlobClient();
             CloudBlobContainer cloudBlobContainer = blobClient.GetContainerReference("providers");
-            List<Provider> providers = new List<Provider>(ids.Count);
+            List<KyruusDataStructure> providers = new List<KyruusDataStructure>(ids.Count);
             foreach (string id in ids)
             {
                 CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"p-2018-11-12-15-00-01-000726-Utc-4d41468f-51d7-4c4f-9698-24b6637b7eb5/{id}.json");
                 string doc = cloudBlockBlob.DownloadText();
-                Provider p = JsonConvert.DeserializeObject<Provider>(doc);
+                KyruusDataStructure p = JsonConvert.DeserializeObject<KyruusDataStructure>(doc);
                 providers.Add(p);
             }
             Console.WriteLine($"{providers.Count} providers from {nameof(BlobStorage)}->{nameof(GetDocuments)}(): {(DateTime.Now - startTime).TotalMilliseconds}");
@@ -48,14 +48,14 @@ namespace AzureSearch.Performance
         }
         public static async Task GetDocumentsSection(CloudBlobContainer cloudBlobContainer, List<string> ids, int section)
         {
-            List<Provider> providers = new List<Provider>(10);
+            List<KyruusDataStructure> providers = new List<KyruusDataStructure>(10);
             int start = section * 5;
             int end = start + 5;
             for (int i = start; i < end; i++)
             {
                 CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"p-2018-11-12-15-00-01-000726-Utc-4d41468f-51d7-4c4f-9698-24b6637b7eb5/{ids[i]}.json");
                 string doc = await cloudBlockBlob.DownloadTextAsync();
-                Provider p = JsonConvert.DeserializeObject<Provider>(doc);
+                KyruusDataStructure p = JsonConvert.DeserializeObject<KyruusDataStructure>(doc);
                 providers.Add(p);
             }
             Console.WriteLine($"{providers.Count} providers");

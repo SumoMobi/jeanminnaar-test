@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Loader.Test", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Source", "AzureSearch.Source\AzureSearch.Source.csproj", "{CBF50FFB-2601-4162-A838-A8B5C0193E88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSearch.Performance", "AzureSearch.Performance\AzureSearch.Performance.csproj", "{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Performance", "AzureSearch.Performance\AzureSearch.Performance.csproj", "{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSearch.PerformanceInsideCloud", "AzureSearch.PerformanceInsideCloud\AzureSearch.PerformanceInsideCloud.csproj", "{D95900C2-048B-4F3B-AF30-1940FDB466BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D95900C2-048B-4F3B-AF30-1940FDB466BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D95900C2-048B-4F3B-AF30-1940FDB466BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D95900C2-048B-4F3B-AF30-1940FDB466BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D95900C2-048B-4F3B-AF30-1940FDB466BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

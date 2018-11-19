@@ -2,7 +2,7 @@
 
 namespace AzureSearch.Common
 {
-    public class Provider
+    public class KyruusDataStructure
     {
         public bool accepting_new_patients { get; set; }
         public object access_program_status { get; set; }
@@ -64,77 +64,77 @@ namespace AzureSearch.Common
         public string web_phone_number { get; set; }
         public int? years_in_practice { get; set; }
 
-        public static implicit operator Provider(RelaxedProvider junkProvider)
+        public static implicit operator KyruusDataStructure(RelaxedKyruusDataStructure relaxedKyruusDataStructure)
         {   //We get junk entries from Kyruus.  Use this operator to trap these (conversion) exceptions, report and reject the junk entries.
-            RelaxedProvider j = junkProvider;
-            Provider p = new Provider
+            RelaxedKyruusDataStructure r = relaxedKyruusDataStructure;
+            KyruusDataStructure p = new KyruusDataStructure
             {
-                accepting_new_patients = j.accepting_new_patients.Value,
-                access_program_status = j.access_program_status,
-                age_groups_seen = j.age_groups_seen,
-                approach_to_care = j.approach_to_care,
-                board_certifications = j.board_certifications,
-                case_types_seen = j.case_types_seen,
-                clinical_contact = j.clinical_contact,
-                clinic_location_url = j.clinic_location_url,
-                contacts = j.contacts,
-                credentialed_specialty = j.credentialed_specialty,
-                credentialing_attachment = j.credentialing_attachment,
-                current_status = j.current_status,
-                customer_code = j.customer_code,
-                date_of_birth = j.date_of_birth,
-                degrees = j.degrees,
-                external_id = j.external_id,
-                gender = j.gender,
-                hospital_affiliation_url = j.hospital_affiliation_url,
-                id = j.id,
-                image_url = j.image_url,
-                insurance_accepted = j.insurance_accepted,
-                interests_activities = j.interests_activities,
-                is_live = j.is_live.Value,
-                is_primary_care = j.is_primary_care.Value,
-                is_specialty_care = j.is_specialty_care.Value,
-                languages = j.languages,
-                locations = j.locations,
-                location_change_form = j.location_change_form,
-                md_anderson = j.md_anderson,
-                medical_school = j.medical_school,
-                metadata = j.metadata,
-                multi_resource_scheduling = j.multi_resource_scheduling,
-                name = j.name,
-                networks = j.networks,
-                network_affiliations = j.network_affiliations,
-                notes = j.notes,
-                npi = j.npi,
-                other_profile_edits = j.other_profile_edits,
-                p4_id = j.p4_id,
-                portal_link = j.portal_link,
-                practice_groups = j.practice_groups,
-                preferred_name = j.preferred_name,
-                professional_statement = j.professional_statement,
-                provider_email = j.provider_email,
-                provider_is_employed = j.provider_is_employed,
-                provider_type = j.provider_type,
-                research_pubs = j.research_pubs,
-                reviews = j.reviews,
-                scope_of_practice = j.scope_of_practice,
-                show_in_pmac = j.show_in_pmac,
-                show_in_pmc = j.show_in_pmc,
-                sort_preferences = j.sort_preferences,
-                specializing_in = j.specializing_in,
-                specialties = j.specialties,
-                status_transitions = j.status_transitions,
-                training = j.training,
-                video_url = j.video_url,
-                web_phone_number = j.web_phone_number,
-                years_in_practice = j.years_in_practice
+                accepting_new_patients = r.accepting_new_patients.Value,
+                access_program_status = r.access_program_status,
+                age_groups_seen = r.age_groups_seen,
+                approach_to_care = r.approach_to_care,
+                board_certifications = r.board_certifications,
+                case_types_seen = r.case_types_seen,
+                clinical_contact = r.clinical_contact,
+                clinic_location_url = r.clinic_location_url,
+                contacts = r.contacts,
+                credentialed_specialty = r.credentialed_specialty,
+                credentialing_attachment = r.credentialing_attachment,
+                current_status = r.current_status,
+                customer_code = r.customer_code,
+                date_of_birth = r.date_of_birth,
+                degrees = r.degrees,
+                external_id = r.external_id,
+                gender = r.gender,
+                hospital_affiliation_url = r.hospital_affiliation_url,
+                id = r.id,
+                image_url = r.image_url,
+                insurance_accepted = r.insurance_accepted,
+                interests_activities = r.interests_activities,
+                is_live = r.is_live.Value,
+                is_primary_care = r.is_primary_care.Value,
+                is_specialty_care = r.is_specialty_care.Value,
+                languages = r.languages,
+                locations = r.locations,
+                location_change_form = r.location_change_form,
+                md_anderson = r.md_anderson,
+                medical_school = r.medical_school,
+                metadata = r.metadata,
+                multi_resource_scheduling = r.multi_resource_scheduling,
+                name = r.name,
+                networks = r.networks,
+                network_affiliations = r.network_affiliations,
+                notes = r.notes,
+                npi = r.npi,
+                other_profile_edits = r.other_profile_edits,
+                p4_id = r.p4_id,
+                portal_link = r.portal_link,
+                practice_groups = r.practice_groups,
+                preferred_name = r.preferred_name,
+                professional_statement = r.professional_statement,
+                provider_email = r.provider_email,
+                provider_is_employed = r.provider_is_employed,
+                provider_type = r.provider_type,
+                research_pubs = r.research_pubs,
+                reviews = r.reviews,
+                scope_of_practice = r.scope_of_practice,
+                show_in_pmac = r.show_in_pmac,
+                show_in_pmc = r.show_in_pmc,
+                sort_preferences = r.sort_preferences,
+                specializing_in = r.specializing_in,
+                specialties = r.specialties,
+                status_transitions = r.status_transitions,
+                training = r.training,
+                video_url = r.video_url,
+                web_phone_number = r.web_phone_number,
+                years_in_practice = r.years_in_practice
             };
             return p;
         }
     }
 
-    public class RelaxedProvider
-    {   //We get providers with about no field populated.  That crashes JSON Converter.  We use this interim class to weed out the junk entries.
+    public class RelaxedKyruusDataStructure
+    {   //We get providers with almost no field populated.  That crashes JSON Converter.  We use this interim class to weed out the junk entries.
         public bool? accepting_new_patients { get; set; }
         public object access_program_status { get; set; }
         public Age_Groups_Seen[] age_groups_seen { get; set; }

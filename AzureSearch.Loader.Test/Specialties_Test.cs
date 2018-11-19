@@ -11,7 +11,7 @@ namespace AzureSearch.Loader.Test
         [TestMethod]
         public void GetAllSpecialitiesAliasesAndTypes_Test01()
         {
-            List<Provider> providers = new List<Provider>();
+            List<KyruusDataStructure> providers = new List<KyruusDataStructure>();
             int index;
             Alias a1 = new Alias();
             Alias a2 = new Alias();
@@ -27,9 +27,9 @@ namespace AzureSearch.Loader.Test
             Specialty s4 = new Specialty();
             List<Specialty> sList1;
             List<Specialty> sList2;
-            Provider p1 = new Provider();
-            Provider p2 = new Provider();
-            Provider p3 = new Provider();
+            KyruusDataStructure p1 = new KyruusDataStructure();
+            KyruusDataStructure p2 = new KyruusDataStructure();
+            KyruusDataStructure p3 = new KyruusDataStructure();
             List<SpecialtyAliasAndType> specialtiesAliasesAndTypes;
 
             //Empty provider list.
@@ -222,7 +222,7 @@ namespace AzureSearch.Loader.Test
             a8 = new Alias { name = "a8" };
             s4.aliases = new Alias[2] { a7, a8 };
             sList2 = new List<Specialty>() { s3, s4 };
-            p2 = new Provider();
+            p2 = new KyruusDataStructure();
             p2.specialties = sList2.ToArray();
             providers.Add(p2);
 

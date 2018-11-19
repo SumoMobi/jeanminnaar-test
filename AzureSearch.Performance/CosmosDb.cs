@@ -17,7 +17,7 @@ namespace AzureSearch.Performance
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri("bhprovidersdb", "Kyruus");
             FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
             string sql = $"SELECT * FROM c WHERE c.id IN ({Common.IdsInClause})";
-            List<Provider> providers = documentClient.CreateDocumentQuery<Provider>(collectionUri, sql, options).ToList();
+            List<KyruusDataStructure> providers = documentClient.CreateDocumentQuery<KyruusDataStructure>(collectionUri, sql, options).ToList();
             Console.WriteLine($"{providers.Count} providers from CosmosDB->GetDocuments(): {(DateTime.Now - startTime).TotalMilliseconds}");
         }
         public static async Task GetDocumentsStoredProcedure(string cosmosUrl, string cosmosKey)
@@ -34,7 +34,7 @@ namespace AzureSearch.Performance
             {
             }
 //            List<Provider> providers = JsonConvert.DeserializeObject<Provider>(spResponse.Response);
-            Console.WriteLine($"{?} providers from {nameof(CosmosDb)}->{nameof(GetDocumentsStoredProcedure)}(): {(DateTime.Now - startTime).TotalMilliseconds}");
+            Console.WriteLine($"? providers from {nameof(CosmosDb)}->{nameof(GetDocumentsStoredProcedure)}(): {(DateTime.Now - startTime).TotalMilliseconds}");
             return;
         }
         public static void GetDocumentsSpecificElements(string cosmosUrl, string cosmosKey)
@@ -48,7 +48,7 @@ namespace AzureSearch.Performance
                 "c.is_primary_care, c.is_specialty_care, c.languages, c.locations," /*c.last_modified, c.last_updated,*/ + " c.name, c.network_affiliations, c.networks, " + /*c.office_hours,*/
                 "c.preferred_name, c.provider_email, c.provider_type, " +/*c.rating_average, c.rating_count,*/ "c.scope_of_practice, c.specializing_in, c.specialties, c.training, " +
                 $"c.video_url, c.web_phone_number, c.years_in_practice FROM c WHERE c.id IN ({Common.IdsInClause})";
-            List<Provider> providers = documentClient.CreateDocumentQuery<Provider>(collectionUri, sql, options).ToList();
+            List<KyruusDataStructure> providers = documentClient.CreateDocumentQuery<KyruusDataStructure>(collectionUri, sql, options).ToList();
             Console.WriteLine($"{providers.Count} providers from {nameof(CosmosDb)}->{nameof(GetDocumentsSpecificElements)}(): {(DateTime.Now - startTime).TotalMilliseconds}");
         }
         public static void GetDocumentsSpecificElementsInParallel(string cosmosUrl, string cosmosKey)
@@ -65,7 +65,7 @@ namespace AzureSearch.Performance
             }
             Task.WaitAll(tasks);
 //            List<Provider> providers = documentClient.CreateDocumentQuery<Provider>(collectionUri, sql, options).ToList();
-            Console.WriteLine($"{?} providers from {nameof(CosmosDb)}->{nameof(GetDocumentsSpecificElementsInParallel)}(): {(DateTime.Now - startTime).TotalMilliseconds}");
+            Console.WriteLine($"? providers from {nameof(CosmosDb)}->{nameof(GetDocumentsSpecificElementsInParallel)}(): {(DateTime.Now - startTime).TotalMilliseconds}");
         }
         private static async Task GetDocumentsFromCosmos(string ids, DocumentClient documentClient)
         {
@@ -76,7 +76,7 @@ namespace AzureSearch.Performance
                 "c.is_primary_care, c.is_specialty_care, c.languages, c.locations," /*c.last_modified, c.last_updated,*/ + " c.name, c.network_affiliations, c.networks, " + /*c.office_hours,*/
                 "c.preferred_name, c.provider_email, c.provider_type, " +/*c.rating_average, c.rating_count,*/ "c.scope_of_practice, c.specializing_in, c.specialties, c.training, " +
                 $"c.video_url, c.web_phone_number, c.years_in_practice FROM c WHERE c.id IN ({ids})";
-            List<Provider> providers = documentClient.CreateDocumentQuery<Provider>(collectionUri, sql, options).ToList();
+            List<KyruusDataStructure> providers = documentClient.CreateDocumentQuery<KyruusDataStructure>(collectionUri, sql, options).ToList();
             Console.WriteLine($"{providers.Count} providers");
         }
     }

@@ -68,7 +68,7 @@ namespace AzureSearch.Loader
             DateTime startDateTime = DateTime.Now;
 
             //Get all the provider data.
-            List<Provider> providers = ProviderDa.GetAllFromDownload();
+            List<KyruusDataStructure> providers = ProviderDa.GetAllFromDownload();
             Console.WriteLine($"{providers.Count} providers fetched.  Response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
             //Get the complete list of aliases and specialties.
@@ -156,12 +156,12 @@ namespace AzureSearch.Loader
             List<SpecialtyAliasAndType> dedupeList = specialtiesAliasesAndTypes.Distinct(new SpecialtyAliasAndTypeComparer()).ToList();
             return dedupeList;
         }
-        public static List<SpecialtyAliasAndType> AccumulateAllSpecialitiesAliasesAndTypes(List<Provider> providers)
+        public static List<SpecialtyAliasAndType> AccumulateAllSpecialitiesAliasesAndTypes(List<KyruusDataStructure> providers)
         {
             List<SpecialtyAliasAndType> specialtiesAliasesAndTypes = new List<SpecialtyAliasAndType>();
             for (int i = 0; i < providers.Count; i++)
             {
-                Provider p = providers[i];
+                KyruusDataStructure p = providers[i];
                 if (p.specialties == null)
                 {   //This provider has no specialties.
                     continue;

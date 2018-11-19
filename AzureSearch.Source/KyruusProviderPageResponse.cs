@@ -10,7 +10,7 @@ namespace AzureSearch.Source
         public object[] facets { get; set; }
         public object geocoded_location { get; set; }
         public object interpretation { get; set; } 
-        public List<RelaxedProvider> providers { get; set; }
+        public List<RelaxedKyruusDataStructure> providers { get; set; }
     }
 
 }

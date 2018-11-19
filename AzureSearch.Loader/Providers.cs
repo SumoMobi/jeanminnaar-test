@@ -37,7 +37,7 @@ namespace AzureSearch.Loader
         {
             //Get all the provider data.
             DateTime startDateTime = DateTime.Now;
-            List<Provider> providers = ProviderDa.GetAllFromDownload();
+            List<KyruusDataStructure> providers = ProviderDa.GetAllFromDownload();
             Console.WriteLine($"{providers.Count} providers fetched.  Response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
             startDateTime = DateTime.Now;
@@ -46,7 +46,7 @@ namespace AzureSearch.Loader
             Random random = new Random(DateTime.Now.Millisecond);
 
             List<ProviderIndex> providerIndexList = new List<ProviderIndex>();
-            foreach (Provider p in providers)
+            foreach (KyruusDataStructure p in providers)
             {
                 #region Assuming properties can be null.  This is what the code here is about -- expecting the worst.
                 //Accepted insurances

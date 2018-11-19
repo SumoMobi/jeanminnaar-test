@@ -39,12 +39,12 @@ namespace AzureSearch.Loader
         {
             //Get all the provider data.
             DateTime startDateTime = DateTime.Now;
-            List<Provider> providers = ProviderDa.GetAllFromDownload();
+            List<KyruusDataStructure> providers = ProviderDa.GetAllFromDownload();
             Console.WriteLine($"{providers.Count} providers fetched.  Response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
             startDateTime = DateTime.Now;
             List<Location> locations = new List<Location>();
-            foreach (Provider p in providers)
+            foreach (KyruusDataStructure p in providers)
             {
                 foreach (Common.Location l in p.locations)
                 {

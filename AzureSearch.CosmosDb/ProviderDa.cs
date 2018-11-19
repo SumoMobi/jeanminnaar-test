@@ -8,10 +8,10 @@ namespace AzureSearch.CosmosDb
     public class ProviderDa
     {
 
-        public static List<Provider> GetAllFromDownload()
+        public static List<KyruusDataStructure> GetAllFromDownload()
         {
             string contents = File.ReadAllText(@"C:\temp\kyruusExtractWantedOnly.json");
-            List<Provider> providers = JsonConvert.DeserializeObject<List<Provider>>(contents);
+            List<KyruusDataStructure> providers = JsonConvert.DeserializeObject<List<KyruusDataStructure>>(contents);
             return providers;
         }
     }
