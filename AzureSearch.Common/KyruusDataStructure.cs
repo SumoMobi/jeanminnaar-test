@@ -11,7 +11,7 @@ namespace AzureSearch.Common
         public Board_Certifications[] board_certifications { get; set; }
         public object[] case_types_seen { get; set; }
         public object clinic_location_url { get; set; }
-        public object clinical_contact { get; set; }
+	    public string clinical_contact { get; set; }
         public Contact[] contacts { get; set; }
         public string[] credentialed_specialty { get; set; }
         public object credentialing_attachment { get; set; }
@@ -51,7 +51,7 @@ namespace AzureSearch.Common
         public string provider_is_employed { get; set; }
         public string provider_type { get; set; }
         public string research_pubs { get; set; }
-        public object reviews { get; set; }
+        public Reviews reviews { get; set; }
         public Scope_Of_Practice scope_of_practice { get; set; }
         public string show_in_pmac { get; set; }
         public string show_in_pmc { get; set; }
@@ -142,7 +142,7 @@ namespace AzureSearch.Common
         public Board_Certifications[] board_certifications { get; set; }
         public object[] case_types_seen { get; set; }
         public object clinic_location_url { get; set; }
-        public object clinical_contact { get; set; }
+        public string clinical_contact { get; set; }
         public Contact[] contacts { get; set; }
         public string[] credentialed_specialty { get; set; }
         public object credentialing_attachment { get; set; }
@@ -182,7 +182,7 @@ namespace AzureSearch.Common
         public string provider_is_employed { get; set; }
         public string provider_type { get; set; }
         public string research_pubs { get; set; }
-        public object reviews { get; set; }
+        public Reviews reviews { get; set; }
         public Scope_Of_Practice scope_of_practice { get; set; }
         public string show_in_pmac { get; set; }
         public string show_in_pmc { get; set; }
@@ -218,6 +218,22 @@ namespace AzureSearch.Common
         public string last_name { get; set; }
         public string middle_name { get; set; }
         public string suffix { get; set; }
+    }
+
+    public class Reviews
+    {
+        public Aggregate_Ratings aggregate_ratings { get; set; }
+        public object[] reviews { get; set; }
+        public string source { get; set; }
+        public string source_url { get; set; }
+    }
+
+    public class Aggregate_Ratings
+    {
+        public float average_rating { get; set; }
+        public int rating_count { get; set; }
+        public int review_count { get; set; }
+        public object[] sub_ratings { get; set; }
     }
 
     public class Scope_Of_Practice

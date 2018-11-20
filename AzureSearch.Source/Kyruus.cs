@@ -33,11 +33,13 @@ namespace AzureSearch.Source
         public static async Task ExtractWantedOnly()
         {
             int numberOfProviders = await GetNumberOfProviders();
+            Console.WriteLine($"{numberOfProviders} providers to download.");
             int pages = numberOfProviders / 100;
             if (numberOfProviders % 100 > 0)
             {
                 pages++;
             }
+            Console.WriteLine($"{pages} pages to download.");
             string shuffeSeed = Guid.NewGuid().ToString();
             using (TextWriter tw = new StreamWriter(@"C:\Temp\kyruusExtractWantedOnly.json", false))
             {
@@ -63,6 +65,7 @@ namespace AzureSearch.Source
                     {
                         continue;
                     }
+                    Console.WriteLine($"Page number {_currentPage} fetched.");
                     KyruusDataStructure doc;
                     for (int d = 0; d < kyruusDocs.Count; d++)
                     {
@@ -82,6 +85,7 @@ namespace AzureSearch.Source
                             tw.Write(",");
                         }
                     }
+                    Console.WriteLine($"{_currentPage} spooled to disk.");
                 }
                 tw.Write("]");
                 tw.Flush();

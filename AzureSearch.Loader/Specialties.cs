@@ -55,12 +55,6 @@ namespace AzureSearch.Loader
     }
     public enum EntryTypes { Specialty, Alias, Subspecialty }
 
-    public class SpecialtyIndex
-    {
-        public string id { get; set; }
-        public string specialty { get; set; }
-        public string alias { get; set; }
-    }
     public class Specialties
     {
         public static void Upload(string apiKey, string serviceName)
@@ -92,10 +86,10 @@ namespace AzureSearch.Loader
 
             //Populate specialties index.
             startDateTime = DateTime.Now;
-            SpecialtyIndex[] specialties = new SpecialtyIndex[specialtiesAliasesAndTypes.Count];
+            SpecialtyIndexDataStructure[] specialties = new SpecialtyIndexDataStructure[specialtiesAliasesAndTypes.Count];
             for (int i = 0; i < specialtiesAliasesAndTypes.Count; i++)
             {
-                specialties[i] = new SpecialtyIndex
+                specialties[i] = new SpecialtyIndexDataStructure
                 {
                     alias = specialtiesAliasesAndTypes[i].Alias,
                     id = (i + 1).ToString(),
