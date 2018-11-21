@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AzureSearch.Api
 {
-    public class Specialties
+    public class Conditions
     {
         public static async Task<List<SuggestionResponse>> GetSuggestions(string searchTerms, SearchServiceClient serviceClient)
         {
@@ -15,29 +15,30 @@ namespace AzureSearch.Api
             {
                 Select = new[]
                 {
-                    "id","specialty","alias"
+                    "id","isPrimaryCare","condition"
                 },
                 IncludeTotalResultCount = true,
                 QueryType = QueryType.Simple,
-                SearchFields = new string[] { "alias" }, 
-                Top = 5
+                SearchFields = new string[] { "condition" },
+                Top = 6
             };
 
-            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("specialties");
-            DocumentSearchResult<SpecialtyIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<SpecialtyIndexDataStructure>(searchTerms + "*", searchParameters);
-            List<SearchResult<SpecialtyIndexDataStructure>> results = searchResults.Results.ToList();
+            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("conditions");
+            DocumentSearchResult<ConditionIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<ConditionIndexDataStructure>(searchTerms + "*", searchParameters);
+            List<SearchResult<ConditionIndexDataStructure>> results = searchResults.Results.ToList();
+
             List<SuggestionResponse> suggestions = new List<SuggestionResponse>();
-            foreach(SpecialtyIndexDataStructure s in results.Select(r => r.Document))
+            foreach (ConditionIndexDataStructure c in results.Select(r => r.Document))
             {
                 suggestions.Add(new SuggestionResponse
                 {
-                    Category = "Specialty",
+                    Category = "Condition",
                     SubCategory = new SubCategory
                     {
-                        Code = "",
-                        Text = s.specialty  //If we have a specialty without an alias, do we do the right thing here?  TODO
+                        Code = (c.isPrimaryCare ? "PrimaryCare" : "Specialist"),
+                        Text = (c.isPrimaryCare ? "Primary Care Providers" : "Specialists")
                     },
-                    Suggestion = s.alias
+                    Suggestion = c.condition
                 });
             }
 

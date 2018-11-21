@@ -104,7 +104,7 @@ namespace AzureSearch.Loader
                         .ToList();
                 }
                 //Names
-                //p.nane.full_name does not have the p.preferred_name in the first name part.
+                //p.name.full_name does not have the p.preferred_name in the first name part.
                 string firstName = string.Empty;
                 string lastName = string.Empty;
                 string firstAndLastName = string.Empty;

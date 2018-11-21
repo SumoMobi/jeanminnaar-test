@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AzureSearch.Api
 {
-    public class Specialties
+    public class Names
     {
         public static async Task<List<SuggestionResponse>> GetSuggestions(string searchTerms, SearchServiceClient serviceClient)
         {
@@ -15,29 +15,30 @@ namespace AzureSearch.Api
             {
                 Select = new[]
                 {
-                    "id","specialty","alias"
+                    "id","firstAndLastName"
                 },
                 IncludeTotalResultCount = true,
                 QueryType = QueryType.Simple,
-                SearchFields = new string[] { "alias" }, 
+                SearchFields = new string[] { "firstAndLastName" },
                 Top = 5
             };
 
-            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("specialties");
-            DocumentSearchResult<SpecialtyIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<SpecialtyIndexDataStructure>(searchTerms + "*", searchParameters);
-            List<SearchResult<SpecialtyIndexDataStructure>> results = searchResults.Results.ToList();
+            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("names");
+            DocumentSearchResult<NameIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<NameIndexDataStructure>(searchTerms + "*", searchParameters);
+            List<SearchResult<NameIndexDataStructure>> results = searchResults.Results.ToList();
+
             List<SuggestionResponse> suggestions = new List<SuggestionResponse>();
-            foreach(SpecialtyIndexDataStructure s in results.Select(r => r.Document))
+            foreach (NameIndexDataStructure c in results.Select(r => r.Document))
             {
                 suggestions.Add(new SuggestionResponse
                 {
-                    Category = "Specialty",
+                    Category = "Name",
                     SubCategory = new SubCategory
                     {
-                        Code = "",
-                        Text = s.specialty  //If we have a specialty without an alias, do we do the right thing here?  TODO
+                        Code = null,
+                        Text = null
                     },
-                    Suggestion = s.alias
+                    Suggestion = c.firstAndLastName
                 });
             }
 

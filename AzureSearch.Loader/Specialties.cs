@@ -79,10 +79,10 @@ namespace AzureSearch.Loader
             specialtiesAliasesAndTypes = RemoveSpecialtyEntriesWithAliases(specialtiesAliasesAndTypes);
             Console.WriteLine($"{specialtiesAliasesAndTypes.Count} entries after removing some specialty entries.  Response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
-            //Drop and recreate the Azure Index for suggestions.
+            //Drop and recreate the Azure Index.
             startDateTime = DateTime.Now;
-            RecreateSuggestionIndexes();
-            Console.WriteLine($"Recreate suggestion indexes response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
+            RecreateIndex();
+            Console.WriteLine($"Recreate index response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
             //Populate specialties index.
             startDateTime = DateTime.Now;
@@ -97,13 +97,13 @@ namespace AzureSearch.Loader
                 };
             }
             IndexLoader.MergeOrUpload(specialties.ToList(), apiKey, serviceName, "specialties");
-            Console.WriteLine($"PopulateSpecialtiesIndex response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
+            Console.WriteLine($"Upload index response time {(DateTime.Now - startDateTime).TotalMilliseconds}");
 
         }
 
-        private static void RecreateSuggestionIndexes()
+        private static void RecreateIndex()
         {
-            Console.WriteLine("First need to drop and create the Specialties index.  Hit ENTER when done.");
+            Console.WriteLine("First need to drop and create the index.  Hit ENTER when done.");
             Console.ReadLine();
             //Drop the indexes
             //TODO.  For now do it through Postman.
