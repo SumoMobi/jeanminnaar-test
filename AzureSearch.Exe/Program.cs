@@ -67,6 +67,12 @@ namespace AzureSearch.Exe
                 case "pbp":
                     Performance.BlobStorage.GetDocumentsInParallel(storageAccountKey, storageAccountName);    //4.0 seconds.  Goes up to 26 seconds at times.
                     break;
+                case "pbn":
+                    Performance.BlobStorageNarrow.GetDocuments(storageAccountKey, storageAccountName);
+                    break;
+                case "pbpn":
+                    Performance.BlobStorageNarrow.GetDocumentsInParallel(storageAccountKey, storageAccountName);
+                    break;
                 default:
                     ShowHelp();
                     break;

@@ -25,15 +25,15 @@ namespace AzureSearch.PerformanceInsideCloud
             DocumentClient documentClient = new DocumentClient(new Uri(CloudConfigurationManager.GetSetting("cosmosUrl")), CloudConfigurationManager.GetSetting("cosmosKey"));
             Uri collectionUri = UriFactory.CreateDocumentCollectionUri("bhprovidersdb", "DGProviders");
             FeedOptions options = new FeedOptions { EnableCrossPartitionQuery = true };
-            List<DGProvider> providers = new List<DGProvider>();
+            List<ProviderNarrow> providers = new List<ProviderNarrow>();
             string sql = "SELECT c.id, c.accepting_new_patients, c.age_groups_seen, c.approach_to_care, c.board_certifications, c.clinic_location_url, c.credentialed_specialty, " +
                 "c.current_status, c.date_of_birth, c.degrees, c.gender, " + /*c.has_extended_office_hours,*/ "c.image_url, c.insurance_accepted, c.interests_activities, c.is_live, " +
-                "c.is_primary_care, c.is_specialty_care, c.languages," /*c.locations, c.last_modified, c.last_updated,*/ + " c.name, c.network_affiliations, c.networks, " + /*c.office_hours,*/
+                "c.is_primary_care, c.is_specialty_care, c.languages,c.locations, c.last_modified, c.last_updated, c.name, c.network_affiliations, c.networks, " + /*c.office_hours,*/
                 "c.preferred_name, c.provider_email, c.provider_type, " +/*c.rating_average, c.rating_count,*/ "c.scope_of_practice, c.specializing_in, c.specialties, c.training, " +
                 $"c.video_url, c.web_phone_number, c.years_in_practice FROM c WHERE c.id IN ({Common.IdsInClause})";
             for (int r = 0; r < repetitions; r++)
             {
-                providers.AddRange(documentClient.CreateDocumentQuery<DGProvider>(collectionUri, sql, options).ToList());
+                providers.AddRange(documentClient.CreateDocumentQuery<ProviderNarrow>(collectionUri, sql, options).ToList());
             }
             return req.CreateResponse(
                 HttpStatusCode.OK,

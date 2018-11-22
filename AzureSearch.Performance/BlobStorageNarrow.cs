@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AzureSearch.Performance
 {
-    public class BlobStorage
+    public class BlobStorageNarrow
     {
         public static void GetDocuments(string storageAccountKey, string storageAccountName)
         {
@@ -18,13 +18,13 @@ namespace AzureSearch.Performance
             StorageCredentials storageCredentials = new StorageCredentials(storageAccountName, storageAccountKey);
             CloudStorageAccount cloudStorageAccount = new CloudStorageAccount(storageCredentials, useHttps: true);
             CloudBlobClient blobClient = cloudStorageAccount.CreateCloudBlobClient();
-            CloudBlobContainer cloudBlobContainer = blobClient.GetContainerReference("providers");
-            List<KyruusDataStructure> providers = new List<KyruusDataStructure>(ids.Count);
+            CloudBlobContainer cloudBlobContainer = blobClient.GetContainerReference("transformed");
+            List<dynamic> providers = new List<dynamic>(ids.Count);
             foreach (string id in ids)
             {
-                CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"p-2018-11-12-15-00-01-000726-Utc-4d41468f-51d7-4c4f-9698-24b6637b7eb5/{id}.json");
+                CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"k-2018-11-20-21-48-47-0857-Utc/{id}.json");
                 string doc = cloudBlockBlob.DownloadText();
-                KyruusDataStructure p = JsonConvert.DeserializeObject<KyruusDataStructure>(doc);
+                dynamic p = JsonConvert.DeserializeObject<KyruusDataStructure>(doc);
                 providers.Add(p);
             }
             Console.WriteLine($"{providers.Count} providers from {nameof(BlobStorage)}->{nameof(GetDocuments)}(): {(DateTime.Now - startTime).TotalMilliseconds}");
@@ -36,7 +36,7 @@ namespace AzureSearch.Performance
             StorageCredentials storageCredentials = new StorageCredentials(storageAccountName, storageAccountKey);
             CloudStorageAccount cloudStorageAccount = new CloudStorageAccount(storageCredentials, useHttps: true);
             CloudBlobClient blobClient = cloudStorageAccount.CreateCloudBlobClient();
-            CloudBlobContainer cloudBlobContainer = blobClient.GetContainerReference("providers");
+            CloudBlobContainer cloudBlobContainer = blobClient.GetContainerReference("transformed");
             Task[] tasks = new Task[5];
             tasks[0] = GetDocumentsSection(cloudBlobContainer, ids, 0);
             tasks[1] = GetDocumentsSection(cloudBlobContainer, ids, 1);
@@ -48,14 +48,14 @@ namespace AzureSearch.Performance
         }
         private static async Task GetDocumentsSection(CloudBlobContainer cloudBlobContainer, List<string> ids, int section)
         {
-            List<KyruusDataStructure> providers = new List<KyruusDataStructure>(5);
+            List<dynamic> providers = new List<dynamic>(5);
             int start = section * 5;
             int end = start + 5;
             for (int i = start; i < end; i++)
             {
-                CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"p-2018-11-12-15-00-01-000726-Utc-4d41468f-51d7-4c4f-9698-24b6637b7eb5/{ids[i]}.json");
+                CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"k-2018-11-20-21-48-47-0857-Utc/{ids[i]}.json");
                 string doc = await cloudBlockBlob.DownloadTextAsync();
-                KyruusDataStructure p = JsonConvert.DeserializeObject<KyruusDataStructure>(doc);
+                dynamic p = JsonConvert.DeserializeObject<dynamic>(doc);
                 providers.Add(p);
             }
             Console.WriteLine($"{providers.Count} providers");
