@@ -9,7 +9,7 @@ namespace AzureSearch.Api
 {
     public class Insurances
     {
-        public static async Task<List<SuggestionResponse>> GetSuggestions(string searchTerms, SearchServiceClient serviceClient)
+        public static async Task<List<SuggestionResponse>> GetSuggestions(string azureSearchTerm, SearchServiceClient serviceClient)
         {
             SearchParameters searchParameters = new SearchParameters
             {
@@ -24,7 +24,7 @@ namespace AzureSearch.Api
             };
 
             ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("insurances");
-            DocumentSearchResult<InsuranceIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<InsuranceIndexDataStructure>(searchTerms + "*", searchParameters);
+            DocumentSearchResult<InsuranceIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<InsuranceIndexDataStructure>(azureSearchTerm, searchParameters);
             List<SearchResult<InsuranceIndexDataStructure>> results = searchResults.Results.ToList();
 
             List<SuggestionResponse> suggestions = new List<SuggestionResponse>();

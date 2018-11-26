@@ -9,7 +9,7 @@ namespace AzureSearch.Api
 {
     public class Conditions
     {
-        public static async Task<List<SuggestionResponse>> GetSuggestions(string searchTerms, SearchServiceClient serviceClient)
+        public static async Task<List<SuggestionResponse>> GetSuggestions(string azureSearchTerm, SearchServiceClient serviceClient)
         {
             SearchParameters searchParameters = new SearchParameters
             {
@@ -24,7 +24,7 @@ namespace AzureSearch.Api
             };
 
             ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("conditions");
-            DocumentSearchResult<ConditionIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<ConditionIndexDataStructure>(searchTerms + "*", searchParameters);
+            DocumentSearchResult<ConditionIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<ConditionIndexDataStructure>(azureSearchTerm, searchParameters);
             List<SearchResult<ConditionIndexDataStructure>> results = searchResults.Results.ToList();
 
             List<SuggestionResponse> suggestions = new List<SuggestionResponse>();
