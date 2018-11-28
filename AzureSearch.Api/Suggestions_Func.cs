@@ -41,7 +41,7 @@ namespace AzureSearch.Api
                 return response;
             }
 
-            string[] sts = st.Split(new char[] { ' ' });
+            string[] sts = st.Split(' ');
             for(int t = 0; t < sts.Length; t++)
             {
                 if (sts[t].EndsWith("*") == false)
