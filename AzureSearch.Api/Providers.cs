@@ -20,20 +20,135 @@ namespace AzureSearch.Api
         /// <summary>
         /// These are the names like condition, specialty, acceptNewPatients and so on.
         /// </summary>
-        public string FilterName { get; set; }
+        public string AzureIndexFieldName { get; set; }
 
         /// <summary>
         /// In the case of a suggestion filter, there is just one value.  But in the case of say languages, there could be multiple values.  These values to be treated as AND requests.
         /// </summary>
         public List<string> Values { get; set; }
     }
+    public enum AzureIndexFieldTypes { text, collection, boolean };
+    public class FilterMapInfo
+    {
+        /// <summary>
+        /// This is like "Condition"
+        /// </summary>
+        public string FilterName { get; set; }
+        /// <summary>
+        /// The field name in the Azure Search index
+        /// </summary>
+        public string AzureIndexFieldName { get; set; }
+        /// <summary>
+        /// Is the field a collection type in Azure Search
+        /// </summary>
+        public AzureIndexFieldTypes AzureIndexFieldType { get; set; }
+        /// <summary>
+        /// A set of filter requests can only originate from a user clicking on a suggestion.
+        /// </summary>
+        public bool IsSuggestion { get; set; }
+    }
     public class Providers
     {
-        public static async Task<List<AzureSearchProviderQueryResponse>> GetProviders(int skip, int take, string universal, List<Filter> filters)
+        public static List<FilterMapInfo> filterMapInfoList = new List<FilterMapInfo>()
         {
-            SearchServiceClient serviceClient = new SearchServiceClient(
-                CloudConfigurationManager.GetSetting("serviceName"), new SearchCredentials(CloudConfigurationManager.GetSetting("apiKey")));
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.collection,
+                AzureIndexFieldName = "conditions",
+                FilterName = "condition",
+                IsSuggestion = true
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.text,
+                AzureIndexFieldName = "firstAndLastName",
+                FilterName = "provider",
+                IsSuggestion = true
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.collection,
+                AzureIndexFieldName = "specialties",
+                FilterName = "specialty",
+                IsSuggestion = true
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.collection,
+                AzureIndexFieldName = "acceptedInsurances",
+                FilterName = "insurance",
+                IsSuggestion = true
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.boolean,
+                AzureIndexFieldName = "isPrimaryCare",
+                FilterName = "isprimarycare",
+                IsSuggestion = true
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.collection,
+                AzureIndexFieldName = "agesSeen",
+                FilterName = "agesseen",
+                IsSuggestion = false
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.collection,
+                AzureIndexFieldName = "acceptedInsurances",
+                FilterName = "acceptedinsurances",
+                IsSuggestion = false
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.boolean,
+                AzureIndexFieldName = "acceptNewPatients",
+                FilterName = "acceptnewpatients",
+                IsSuggestion = false
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.boolean,
+                AzureIndexFieldName = "isMale",
+                FilterName = "ismale",
+                IsSuggestion = false
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.collection,
+                AzureIndexFieldName = "providerType",
+                FilterName = "providertype",
+                IsSuggestion = false
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.collection,
+                AzureIndexFieldName = "languages",
+                FilterName = "languages",
+                IsSuggestion = false
+            },
+            new FilterMapInfo
+            {
+                AzureIndexFieldType = AzureIndexFieldTypes.collection,
+                AzureIndexFieldName = "networkAffiliations",
+                FilterName = "networkaffiliations",
+                IsSuggestion = false
+            },
+        };
 
+        private static List<String> universalSearchFields = new List<string>()
+        {
+            "acceptedInsurancesLower",
+            "firstAndLastNameLower",
+            "conditionsLower",
+            "specialtiesLower",
+            "cities",
+            "zipCodes",
+        };
+
+        public static SearchParameters BuildAzureSearchParameters(int skip, int take, string universal, List<Filter> filters)
+        {
             List<string> facets = new List<string>()
             {
                 "agesSeen",
@@ -47,45 +162,48 @@ namespace AzureSearch.Api
             List<string> searchFields = null;
             string search = "*";
             SearchMode searchMode = SearchMode.All;
-            string queryType = "simple";
+            QueryType queryType = QueryType.Simple;
             if (universal != null)
             {
-                searchFields = new List<string>();
-                searchFields.Add("acceptedInsurancesLower");
-                searchFields.Add("firstAndLastNameLower");
-                searchFields.Add("conditionsLower");
-                searchFields.Add("specialtiesLower");
-                searchFields.Add("cities");
-                searchFields.Add("zipCodes");
+                searchFields = universalSearchFields;
                 search = universal; //wild cards?
             }
             string filter = null;
             if (filters.Count > 0)
             {
-                queryType = "full";
+                queryType = QueryType.Full;
                 filter = string.Empty;
                 foreach (Filter f in filters)
                 {
-                    string quote = string.Empty;
-                    if (f.FilterName.EmCompareIgnoreCase("isMale") || f.FilterName.EmCompareIgnoreCase("acceptNewPatients"))
-                    {
-                        quote = "'";
-                    }
+                    //Find filter entry in the filter map info list.
+                    FilterMapInfo fmInfo = filterMapInfoList.Single(m => m.AzureIndexFieldName == f.AzureIndexFieldName);
                     foreach (string val in f.Values)
                     {
-                        filter += $"({f.FilterName} eq {quote}{val}{quote}) and ";
+                        switch (fmInfo.AzureIndexFieldType)
+                        {
+                            case AzureIndexFieldTypes.collection:
+                                filter += $"({fmInfo.AzureIndexFieldName}/any(i: i eq '{val}')) and ";
+                                break;
+                            case AzureIndexFieldTypes.boolean:
+                                filter += $"({f.AzureIndexFieldName} eq {val}) and ";
+                                break;
+                            case AzureIndexFieldTypes.text:
+                                filter += $"({f.AzureIndexFieldName} eq '{val}') and ";
+                                break;
+                                //TODO When adding lat/lon/radius, will need to add more types.  The radius searches goes off elsewhere first anyhow.
+                        }
                     }
                 }
-                filter = filter.Substring(0, filter.Length - 5);    //Chop off the last AND.
+                filter = filter.Substring(0, filter.Length - 5);    //Chop off the last 'and'.
             }
 
             SearchParameters searchParameters = new SearchParameters
             {
                 Facets = facets.ToArray(),
                 Filter = filter,
-                IncludeTotalResultCount = true, 
+                IncludeTotalResultCount = true,
                 OrderBy = new List<string>() { "searchRank", "randomNumber" }, //What about relevance/score?
-                QueryType = QueryType.Simple,
+                QueryType = queryType,
                 SearchFields = searchFields,
                 SearchMode = searchMode,
                 Select = new[]
@@ -95,9 +213,18 @@ namespace AzureSearch.Api
                 Skip = skip,
                 Top = take
             };
+            return searchParameters;
+        }
+        public static async Task<List<AzureSearchProviderQueryResponse>> GetProviders(int skip, int take, string universal, List<Filter> filters)
+        {
+            SearchServiceClient serviceClient = new SearchServiceClient(
+                CloudConfigurationManager.GetSetting("serviceName"), new SearchCredentials(CloudConfigurationManager.GetSetting("apiKey")));
+
+            SearchParameters searchParameters = BuildAzureSearchParameters(skip, take, universal, filters);
 
             ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("providers");
-            DocumentSearchResult<AzureSearchProviderQueryResponse> searchResults = await indexClient.Documents.SearchAsync<AzureSearchProviderQueryResponse>(search, searchParameters);
+            DocumentSearchResult<AzureSearchProviderQueryResponse> searchResults = 
+                await indexClient.Documents.SearchAsync<AzureSearchProviderQueryResponse>("*", searchParameters);
             List<SearchResult<AzureSearchProviderQueryResponse>> results = searchResults.Results.ToList();
 
             return results.Select(r => r.Document).ToList();

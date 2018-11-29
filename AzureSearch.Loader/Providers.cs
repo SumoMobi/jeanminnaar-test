@@ -20,6 +20,7 @@ namespace AzureSearch.Loader
         public string firstAndLastNameLower { get; set; }
         public bool acceptNewPatients { get; set; }
         public bool isMale { get; set; }
+        public bool isPrimaryCare { get; set; }
         public string providerType { get; set; }
         public List<string> languages { get; set; }
         public List<string> networkAffiliations { get; set; }
@@ -210,6 +211,7 @@ namespace AzureSearch.Loader
                     firstAndLastNameLower = firstAndLastName.ToLower(),
                     id = p.id.ToString(),
                     isMale = p.gender == "Male",
+                    isPrimaryCare = p.is_primary_care,
                     languages = languages,
                     locationIds = locationIds,
                     networkAffiliations = networkAffiliations,

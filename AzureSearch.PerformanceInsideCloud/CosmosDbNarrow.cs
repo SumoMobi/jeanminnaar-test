@@ -1,4 +1,5 @@
 using AzureSearch.Common;
+using AzureSearch.Common.Dg;
 using Microsoft.Azure;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs;

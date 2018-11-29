@@ -1,16 +1,15 @@
+using AzureSearch.Common;
+using AzureSearch.Common.Dg;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Host;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
-using AzureSearch.Common;
-using System.Text;
-using Newtonsoft.Json;
-using System;
-using System.Collections;
 
 namespace AzureSearch.Api
 {
@@ -23,6 +22,7 @@ namespace AzureSearch.Api
         public List<ProviderNarrow> providers { get; set; }
 
     }
+
     public static class Query_Func
     {
         [FunctionName("Query")]
@@ -32,12 +32,17 @@ namespace AzureSearch.Api
             TraceWriter log)
         {
             List<KeyValuePair<string, string>> queryParams = req.GetQueryNameValuePairs().ToList();
-            List<string> failureReasons;
+
+            //We need to be case insensitive with the "key" type values.
+            List<KeyValuePair<string, string>> lowerQueryParams = TakeQueryParmsToLower(queryParams);
+
             HttpResponseMessage response;
             DateTime startDt = DateTime.Now;
             QueryResponse qr;
 
-            if (AreParametersAcceptable(queryParams, out failureReasons) == false)
+            //Make sure we received valid parameters.
+            List<string> failureReasons;
+            if (AreParametersAcceptable(lowerQueryParams, out failureReasons) == false)
             {
                 failureReasons.Add($"Request received: {req.RequestUri.ToString()}");
                 qr = new QueryResponse
@@ -55,6 +60,11 @@ namespace AzureSearch.Api
 
                 return response;
             }
+
+            int skip;int take; string seed; string universal; List<Filter> filters;
+            GetParameters(lowerQueryParams, out skip, out take, out seed, out universal, out filters);
+
+            List<AzureSearchProviderQueryResponse> providers = await Providers.GetProviders(skip, take, universal, filters);
 
             qr = new QueryResponse
             {
@@ -74,60 +84,87 @@ namespace AzureSearch.Api
 
         }
 
-        public static async Task<List<ProviderNarrow>> GetProviders(List<KeyValuePair<string, string>> parameters)
+        public static List<KeyValuePair<string, string>> TakeQueryParmsToLower(List<KeyValuePair<string, string>> queryParms)
         {
-            int skip = int.Parse(parameters.Single(p => p.Key.EmCompareIgnoreCase("skip")).Value);
-            int take = int.Parse(parameters.Single(p => p.Key.EmCompareIgnoreCase("take")).Value);
-
-            KeyValuePair<string, string>? kvp;
-
-            //Get seed parm if it is there.
-            kvp = parameters.SingleOrDefault(p => p.Key.EmCompareIgnoreCase("seed"));
-            string seed = null;
-            if (kvp != null)
+            List<KeyValuePair<string, string>> lowerQueryParams = new List<KeyValuePair<string, string>>();
+            for (int qp = 0; qp < queryParms.Count; qp++)
             {
-                seed = ((KeyValuePair<string, string>)kvp).Value;
-            }
-
-            //Get universal parm if it is there.
-            kvp = parameters.SingleOrDefault(p => p.Key.EmCompareIgnoreCase("universal"));
-            string universal = null;
-            if (kvp != null)
-            {
-                universal = ((KeyValuePair<string, string>)kvp).Value;
-            }
-
-            //Get filter parms
-            List<Filter> filters = new List<Filter>();
-            foreach (KeyValuePair<string, string> kvpair in parameters)
-            {
-                if (kvpair.Key.EmCompareIgnoreCase("filter") == false)
+                //If value has a filter name, lower that part too.  Validation of the filtername will happen later on.
+                string val = queryParms[qp].Value;
+                string fn = val.EmGetTextBeforeDelimiter(':');
+                if (string.IsNullOrWhiteSpace(fn) == false)
                 {
-                    continue;
+                    fn = fn.ToLower();
+                    val = fn + val.Substring(fn.Length);
                 }
+                lowerQueryParams.Add(new KeyValuePair<string, string>(queryParms[qp].Key.ToLower(), val));
+            }
+            return lowerQueryParams;
+        }
+
+        public static List<Filter> GetFilters(List<KeyValuePair<string, string>> parameters)
+        {
+            List<Filter> filters = new List<Filter>();
+            foreach (KeyValuePair<string, string> kvpair in parameters.Where(p => p.Key == "filter"))
+            {
                 string filterName = kvpair.Value.EmGetTextBeforeDelimiter(':');
-                int index = filters.FindIndex(f => f.FilterName.EmCompareIgnoreCase(filterName));
+                FilterMapInfo fmInfo = Providers.filterMapInfoList.Single(f => f.FilterName == filterName);
+                int index = filters.FindIndex(f => f.AzureIndexFieldName == fmInfo.AzureIndexFieldName);
                 if (index < 0)
-                {
+                {   //We don't already have this one in the filter list.  Add it and its values.
                     filters.Add(new Filter
                     {
-                        FilterName = filterName,
+                        AzureIndexFieldName = fmInfo.AzureIndexFieldName,
                         Values = new List<string>()
                         {
-                            kvpair.Value.Substring(filterName.Length)
+                            kvpair.Value.Substring(filterName.Length + 1)
                         }
                     });
                     continue;
                 }
-                filters[index].Values.Add(kvpair.Value);
+                //This filter name is already in the filters list.  Just add the values.
+                filters[index].Values.Add(kvpair.Value.Substring(filterName.Length + 1));
             }
-            List<AzureSearchProviderQueryResponse> providers = await Providers.GetProviders(skip, take, universal, filters);
-//            providers = Randomize(providers, seed);
-            return providers;
+            return filters;
+        }
+        public static void GetParameters(List<KeyValuePair<string, string>> parameters, out int skip, out int take, out string seed, out string universal, out List<Filter> filters)
+        {
+            //At this time all parameters are valid and all "key" type values are in lower case.
+            skip = int.Parse(parameters.Single(p => p.Key.EmCompareIgnoreCase("skip")).Value);
+            take = int.Parse(parameters.Single(p => p.Key.EmCompareIgnoreCase("take")).Value);
+
+            //Get seed parm if it is there.
+            seed = null;
+            for (int k = 0; k < parameters.Count; k++)
+            {
+                if (parameters[k].Key == "seed")
+                {
+                    seed = parameters[k].Value;
+                    break;
+                }
+            }
+
+            //Get universal parm if it is there.
+            universal = null;
+            for (int k = 0; k < parameters.Count; k++)
+            {
+                if (parameters[k].Key == "universal")
+                {
+                    universal = parameters[k].Value;
+                    break;
+                }
+            }
+
+            //TODO  Come back here for the radius stuff.
+
+            //Get filter parms
+            filters = GetFilters(parameters);
+            return;
         }
 
         public static bool AreParametersAcceptable(List<KeyValuePair<string, string>> queryParams, out List<string> failureReasons)
         {
+            //The keys and filter name parts of the value of the query parms (what is there before the colon) are all lower case at this point.
             failureReasons = new List<string>();
 
             if (queryParams.Count == 0)
@@ -139,7 +176,7 @@ namespace AzureSearch.Api
             //Ensure you only received recognizable parameters.
             List<string> parameterNames = new List<string>()
             {
-                "skip","" +
+                "skip",
                 "take",
                 "seed",
                 "universal",
@@ -148,9 +185,10 @@ namespace AzureSearch.Api
                 "longitude",
                 "radius"
             };
+            //TODO still need to deal with lat/lon/radius everywhere.
             foreach(KeyValuePair<string, string> parm in queryParams)
             {
-                if (parameterNames.Contains(parm.Key, new EmStringEqualityComparerCaseInsensitive()) == false)
+                if (parameterNames.Contains(parm.Key) == false)
                 {
                     failureReasons.Add($"'{parm.Key}' is not a known parameter.");
                 }
@@ -158,7 +196,7 @@ namespace AzureSearch.Api
 
             //Validate the 'skip' parameter.
             entries = queryParams
-                .Where(q => q.Key.EmCompareIgnoreCase("skip"))
+                .Where(q => q.Key == "skip")
                 .ToList();
             if (entries.Count == 0)
             {
@@ -177,7 +215,7 @@ namespace AzureSearch.Api
                 }
                 //Seed must be provided on any subsequent pages.  It should in some cases be required on the first page too when the user navigates back to the first page.  But that we don't know here.
                 entries = queryParams
-                    .Where(q => q.Key.EmCompareIgnoreCase("seed"))
+                    .Where(q => q.Key == "seed")
                     .ToList();
                 if (entries.Count > 1)
                 {
@@ -191,7 +229,7 @@ namespace AzureSearch.Api
 
             //Validate the 'take' parameter.
             entries = queryParams
-                .Where(q => q.Key.EmCompareIgnoreCase("take"))
+                .Where(q => q.Key == "take")
                 .ToList();
             if (entries.Count == 0)
             {
@@ -223,36 +261,13 @@ namespace AzureSearch.Api
 
             //Validate 'filter' parameters
             List<KeyValuePair<string, string>> filters = queryParams
-                .Where(q => q.Key.EmCompareIgnoreCase("filter"))
+                .Where(q => q.Key == "filter")
                 .ToList();
-            List<string> suggestionFilterNames = new List<string>()
-            {
-                "Condition",
-                "Provider", //Name search
-                "Specialty",
-                "Insurance",
-                "PrimaryCare",  //Used when user selects the fake PC entry.
-            };
-            List<string> filterNames = new List<string>()
-            {
-//                "Condition_Specialist",
-//                "Condition_PrimaryCare",
-                "Condition",
-                "Provider", //Name search
-                "Specialty",
-                "Insurance",
-                "PrimaryCare",  //When used?  When user selects the fake PC entry.
-                "agesSeen",
-                "acceptedInsurances",
-                "acceptNewPatients",
-                "isMale",
-                "providerType",
-                "languages",    //Provide for multiple selection (which are then ORs and not ANDs)
-                "networkAffiliations"
-            };
-            //We can have "&filter=agesSeen:babies&filter=agesSeen:youth".  This is an OR for agesSeen.  All good so far.
-            //But we cannot have more than one facet.  So "&filter=condition:cancer&filter=condition:blood" is not allowed.  This is because the facets come from the suggestions.
-            //Try and get the facet names first.
+
+            //We can have "&filter=agesSeen:babies&filter=agesSeen:youth".  This is an AND for agesSeen.  All good so far.
+            //But we cannot have more than one suggestion type filter.  So "&filter=condition:cancer&filter=condition:blood" is not allowed.  
+            //This is because these type filters come from the suggestions.
+            //Try and get the filter names first.
             List<string> filterNamesRequested = filters
                 .Select(f => f.Value.EmGetTextBeforeDelimiter(':'))
                 .ToList();
@@ -265,9 +280,7 @@ namespace AzureSearch.Api
             }
 
             List<string> duplicateSuggestions = formattedFilterNamesRequested
-                .Select(q => q.ToLower())
-                .Intersect(suggestionFilterNames
-                .Select(f => f.ToLower()))
+                .Intersect(Providers.filterMapInfoList.Where(fmi => fmi.IsSuggestion == true).Select(fmi => fmi.FilterName))
                 .ToList();
             foreach(string dupSuggestion in duplicateSuggestions)
             { 
@@ -293,7 +306,7 @@ namespace AzureSearch.Api
             //Check for valid filter names.
             foreach (string filterNameRequested in formattedFilterNamesRequested)
             {
-                if (filterNames.Contains(filterNameRequested, new EmStringEqualityComparerCaseInsensitive()) == false)
+                if (Providers.filterMapInfoList.Count(f => f.FilterName == filterNameRequested) == 0)
                 {
                     failureReasons.Add($"'{filterNameRequested}' is an invalid filter name.");
                 }
@@ -301,7 +314,7 @@ namespace AzureSearch.Api
 
             //Need to have at least one filter or one universal search parameter.
             List<KeyValuePair<string, string>> universalSearches = queryParams
-                .Where(q => q.Key.EmCompareIgnoreCase("universal"))
+                .Where(q => q.Key == "universal")
                 .ToList();
             if (universalSearches.Count > 1)
             {
@@ -310,6 +323,45 @@ namespace AzureSearch.Api
             if (filters.Count == 0 && universalSearches.Count == 0)
             {
                 failureReasons.Add("Must specify at least one universal search or one filter parameter.");
+            }
+
+            //Do not allow multiple entries for the boolean types.
+            entries = queryParams.Where(q => q.Key == "filter").ToList();
+            foreach(KeyValuePair<string, string> fil in entries)
+            {
+                string filterName = fil.Value.EmGetTextBeforeDelimiter(':');
+                if (string.IsNullOrWhiteSpace(filterName))
+                {
+                    continue;
+                }
+                FilterMapInfo fmi = Providers.filterMapInfoList.SingleOrDefault(f => f.FilterName == filterName);
+                if (fmi == null)
+                {
+                    continue;
+                }
+                if (fmi.AzureIndexFieldType != AzureIndexFieldTypes.boolean)
+                {
+                    continue;
+                }
+                //Booleans can only have true/false values.
+                string val = fil.Value.Substring(filterName.Length);
+                if (!(val.EmCompareIgnoreCase("true") || val.EmCompareIgnoreCase("false")))
+                {
+                    failureReasons.Add($"'{fmi.FilterName}' has an invalid value, namely '{val}'.");
+                }
+                //There can only be one of these parameter entries for this type of filter.
+                int cnt = 0;
+                foreach(KeyValuePair<string, string> k in entries)
+                {
+                    if (k.Value.EmGetTextBeforeDelimiter(':') == filterName)
+                    {
+                        cnt++;
+                    }
+                }
+                if (cnt > 1)
+                {
+                    failureReasons.Add($"Can only specify one '{filterName}' filter parameter.");
+                }
             }
 
             return failureReasons.Count == 0;

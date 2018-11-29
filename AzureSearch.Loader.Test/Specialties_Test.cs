@@ -361,27 +361,27 @@ namespace AzureSearch.Loader.Test
             Assert.AreEqual("sp2", specialtiesAliasesAndTypes[index].Specialty);
 
         }
-        [TestMethod]
-        [ExpectedException(typeof(ApplicationException))]
-        public void Dedupe_Test02()
-        {
-            List<SpecialtyAliasAndType> specialtiesAliasesAndTypes = new List<SpecialtyAliasAndType>();
-            //Dedupe invalid entry list
-            specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
-            {
-                Alias = "a1",
-                EntryType = EntryTypes.Subspecialty,
-                Specialty = "sp1"
-            });
-            specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
-            {
-                Alias = "a1",
-                EntryType = EntryTypes.Alias,
-                Specialty = "sp1"
-            });
-            specialtiesAliasesAndTypes = Specialties.DeDupe(specialtiesAliasesAndTypes);
+        //[TestMethod]
+        //[ExpectedException(typeof(ApplicationException))]
+        //public void Dedupe_Test02()
+        //{
+        //    List<SpecialtyAliasAndType> specialtiesAliasesAndTypes = new List<SpecialtyAliasAndType>();
+        //    //Dedupe invalid entry list
+        //    specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
+        //    {
+        //        Alias = "a1",
+        //        EntryType = EntryTypes.Subspecialty,
+        //        Specialty = "sp1"
+        //    });
+        //    specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
+        //    {
+        //        Alias = "a1",
+        //        EntryType = EntryTypes.Alias,
+        //        Specialty = "sp1"
+        //    });
+        //    specialtiesAliasesAndTypes = Specialties.DeDupe(specialtiesAliasesAndTypes);
 
-        }
+        //}
         [TestMethod]
         public void RemoveSpecialtyEntriesWithAliases_Test01()
         {
