@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AzureSearch.Api
 {
-    public class AzureSearchProviderQueryResponse
+    public class AzureSearchProviderRequestedFields
     {
         public string id { get; set; }
         public int searchRank { get; set; }
@@ -215,7 +215,7 @@ namespace AzureSearch.Api
             };
             return searchParameters;
         }
-        public static async Task<List<AzureSearchProviderQueryResponse>> GetProviders(int skip, int take, string universal, List<Filter> filters)
+        public static async Task<DocumentSearchResult<AzureSearchProviderRequestedFields>> GetProviders(int skip, int take, string universal, List<Filter> filters)
         {
             SearchServiceClient serviceClient = new SearchServiceClient(
                 CloudConfigurationManager.GetSetting("serviceName"), new SearchCredentials(CloudConfigurationManager.GetSetting("apiKey")));
@@ -223,11 +223,12 @@ namespace AzureSearch.Api
             SearchParameters searchParameters = BuildAzureSearchParameters(skip, take, universal, filters);
 
             ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("providers");
-            DocumentSearchResult<AzureSearchProviderQueryResponse> searchResults = 
-                await indexClient.Documents.SearchAsync<AzureSearchProviderQueryResponse>("*", searchParameters);
-            List<SearchResult<AzureSearchProviderQueryResponse>> results = searchResults.Results.ToList();
+            DocumentSearchResult<AzureSearchProviderRequestedFields> searchResults = 
+                await indexClient.Documents.SearchAsync<AzureSearchProviderRequestedFields>(universal, searchParameters);
+            //List<SearchResult<AzureSearchProviderQueryResponse>> results = searchResults.Results.ToList();
 
-            return results.Select(r => r.Document).ToList();
+            return searchResults;
+            //results.Select(r => r.Document).ToList();
         }
     }
 }

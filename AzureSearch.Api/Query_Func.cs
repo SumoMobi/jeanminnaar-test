@@ -1,5 +1,6 @@
 using AzureSearch.Common;
 using AzureSearch.Common.Dg;
+using Microsoft.Azure.Search.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -15,12 +16,17 @@ namespace AzureSearch.Api
 {
     public class QueryResponse
     {
+        #region status info
         public string status { get; set; }
         public List<KeyValuePair<string, string>> parameters { get; set; }
         public List<string> failureReasons { get; set; }
+        #endregion
 
-        public List<ProviderNarrow> providers { get; set; }
-
+        #region results
+        public long? count { get; set; }
+        public FacetResults facets { get; set; }
+        public List<AzureSearchProviderRequestedFields> documents { get; set; }
+        #endregion
     }
 
     public static class Query_Func
@@ -47,9 +53,11 @@ namespace AzureSearch.Api
                 failureReasons.Add($"Request received: {req.RequestUri.ToString()}");
                 qr = new QueryResponse
                 {
+                    count = null,
+                    documents = null,
+                    facets = null,
                     failureReasons = failureReasons,
                     parameters = queryParams,
-                    providers = new List<ProviderNarrow>(),
                     status = "BadRequest"
                 };
                 response = new HttpResponseMessage
@@ -64,13 +72,15 @@ namespace AzureSearch.Api
             int skip;int take; string seed; string universal; List<Filter> filters;
             GetParameters(lowerQueryParams, out skip, out take, out seed, out universal, out filters);
 
-            List<AzureSearchProviderQueryResponse> providers = await Providers.GetProviders(skip, take, universal, filters);
+            DocumentSearchResult<AzureSearchProviderRequestedFields> results = await Providers.GetProviders(skip, take, universal, filters);
 
             qr = new QueryResponse
             {
+                count = results.Count,
+                documents = results.Results.Select(r => r.Document).ToList(),
+                facets = results.Facets,
                 failureReasons = failureReasons,
                 parameters = queryParams,
-                providers = new List<ProviderNarrow>(),
                 status = "OK"
             };
             response = new HttpResponseMessage
@@ -279,13 +289,17 @@ namespace AzureSearch.Api
                 failureReasons.Add("Received one or more filters without a facet name, colon or value.");
             }
 
-            List<string> duplicateSuggestions = formattedFilterNamesRequested
-                .Intersect(Providers.filterMapInfoList.Where(fmi => fmi.IsSuggestion == true).Select(fmi => fmi.FilterName))
-                .ToList();
-            foreach(string dupSuggestion in duplicateSuggestions)
-            { 
-                failureReasons.Add($"Received more than one suggestion parameter, namely {dupSuggestion}.");
-            }
+            //List<string> suggestions = formattedFilterNamesRequested
+            //    .Intersect(Providers.filterMapInfoList.Where(fmi => fmi.IsSuggestion == true).Select(fmi => fmi.FilterName))
+            //    .ToList();
+            //if (suggestions.Count > 1)
+            //{
+            //    foreach (string dupSuggestion in suggestions)
+            //    {
+            //        failureReasons.Add($"Received more than one suggestion parameter, namely {dupSuggestion}.");
+            //    }
+            //}
+
             //Check formatting of filter parameters.
             foreach (KeyValuePair<string, string> filter in filters)
             {
@@ -344,7 +358,7 @@ namespace AzureSearch.Api
                     continue;
                 }
                 //Booleans can only have true/false values.
-                string val = fil.Value.Substring(filterName.Length);
+                string val = fil.Value.Substring(filterName.Length + 1);
                 if (!(val.EmCompareIgnoreCase("true") || val.EmCompareIgnoreCase("false")))
                 {
                     failureReasons.Add($"'{fmi.FilterName}' has an invalid value, namely '{val}'.");

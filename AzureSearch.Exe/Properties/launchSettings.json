@@ -2,7 +2,7 @@
   "profiles": {
     "AzureSearchExe": {
       "commandName": "Project",
-      "commandLineArgs": "pbn"
+      "commandLineArgs": "up"
     }
   }
 }
