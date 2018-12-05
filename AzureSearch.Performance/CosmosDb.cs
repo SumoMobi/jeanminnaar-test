@@ -51,7 +51,7 @@ namespace AzureSearch.Performance
             List<KyruusDataStructure> providers = documentClient.CreateDocumentQuery<KyruusDataStructure>(collectionUri, sql, options).ToList();
             Console.WriteLine($"{providers.Count} providers from {nameof(CosmosDb)}->{nameof(GetDocumentsSpecificElements)}(): {(DateTime.Now - startTime).TotalMilliseconds}");
         }
-        public static void GetDocumentsSpecificElementsInParallel(string cosmosUrl, string cosmosKey)
+        public static async Task GetDocumentsSpecificElementsInParallel(string cosmosUrl, string cosmosKey)
         {
             DateTime startTime = DateTime.Now;
             DocumentClient documentClient = new DocumentClient(new Uri(cosmosUrl), cosmosKey);

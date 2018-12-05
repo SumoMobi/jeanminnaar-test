@@ -34,7 +34,7 @@ namespace AzureSearch.Loader
     }
     public class Providers
     {
-        public static async Task Upload(string apiKey, string serviceName)
+        public static void Upload(string apiKey, string serviceName)
         {
             //Get all the provider data.
             DateTime startDateTime = DateTime.Now;

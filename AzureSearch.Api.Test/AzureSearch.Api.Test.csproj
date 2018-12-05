@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AzureSearch.Api\AzureSearch.Api.csproj" />
+    <ProjectReference Include="..\AzureSearch.Api2\AzureSearch.Api2.csproj" />
   </ItemGroup>
 
 </Project>

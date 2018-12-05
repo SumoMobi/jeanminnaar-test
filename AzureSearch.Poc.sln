@@ -17,13 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Source", "Azure
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Performance", "AzureSearch.Performance\AzureSearch.Performance.csproj", "{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.PerformanceInsideCloud", "AzureSearch.PerformanceInsideCloud\AzureSearch.PerformanceInsideCloud.csproj", "{D95900C2-048B-4F3B-AF30-1940FDB466BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Common.Test", "AzureSearch.Common.Test\AzureSearch.Common.Test.csproj", "{AE9A28C9-1F31-415C-A0AA-9FFAD3D71C5D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Api", "AzureSearch.Api\AzureSearch.Api.csproj", "{D4EA486B-5EC3-4D2A-8A3F-CACAD56AADA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Api.Test", "AzureSearch.Api.Test\AzureSearch.Api.Test.csproj", "{872AA03F-BA2B-447E-A226-8C28C1C23540}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSearch.Common.Test", "AzureSearch.Common.Test\AzureSearch.Common.Test.csproj", "{AE9A28C9-1F31-415C-A0AA-9FFAD3D71C5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Api2", "AzureSearch.Api2\AzureSearch.Api2.csproj", "{0716D65D-030F-4285-B65F-410E72C36376}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSearch.Api.Test", "AzureSearch.Api.Test\AzureSearch.Api.Test.csproj", "{872AA03F-BA2B-447E-A226-8C28C1C23540}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSearch.PerformanceInsideCloud2", "AzureSearch.PerformanceInsideCloud2\AzureSearch.PerformanceInsideCloud2.csproj", "{3925B8A8-49C8-4E08-BF5D-7497F83BBDD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,14 +59,6 @@ Global
 		{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{483EEB11-D0C1-4DC9-85D2-6E51C12915FF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D95900C2-048B-4F3B-AF30-1940FDB466BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D95900C2-048B-4F3B-AF30-1940FDB466BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D95900C2-048B-4F3B-AF30-1940FDB466BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D95900C2-048B-4F3B-AF30-1940FDB466BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D4EA486B-5EC3-4D2A-8A3F-CACAD56AADA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4EA486B-5EC3-4D2A-8A3F-CACAD56AADA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D4EA486B-5EC3-4D2A-8A3F-CACAD56AADA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4EA486B-5EC3-4D2A-8A3F-CACAD56AADA7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AE9A28C9-1F31-415C-A0AA-9FFAD3D71C5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE9A28C9-1F31-415C-A0AA-9FFAD3D71C5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE9A28C9-1F31-415C-A0AA-9FFAD3D71C5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,6 +67,14 @@ Global
 		{872AA03F-BA2B-447E-A226-8C28C1C23540}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{872AA03F-BA2B-447E-A226-8C28C1C23540}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{872AA03F-BA2B-447E-A226-8C28C1C23540}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0716D65D-030F-4285-B65F-410E72C36376}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0716D65D-030F-4285-B65F-410E72C36376}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0716D65D-030F-4285-B65F-410E72C36376}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0716D65D-030F-4285-B65F-410E72C36376}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3925B8A8-49C8-4E08-BF5D-7497F83BBDD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3925B8A8-49C8-4E08-BF5D-7497F83BBDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3925B8A8-49C8-4E08-BF5D-7497F83BBDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3925B8A8-49C8-4E08-BF5D-7497F83BBDD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
