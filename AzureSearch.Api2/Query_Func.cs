@@ -49,8 +49,9 @@ namespace AzureSearch.Api
             ExecutionContext executionContext,
             ILogger log)
         {
-            List<NameValue> queryParams = new List<NameValue>();
+            List<NameValue> queryParams = new List<NameValue>(); 
             string query = req.RequestUri.Query;
+            query = WebUtility.UrlDecode(query);
             if (query != null && query.Length > 1)
             {   //More than just the question mark
                 string[] parms = query.Substring(1).Split('&');
