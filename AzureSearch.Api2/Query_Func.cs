@@ -60,13 +60,15 @@ namespace AzureSearch.Api
                     switch (keyValue.Length)
                     {
                         case 0:
+                            break;
+                        case 1: //= not found
                             queryParams.Add(new NameValue(parm, ""));
                             break;
-                        case 1:
+                        case 2:
                             queryParams.Add(new NameValue(keyValue[0], keyValue[1]));
                             break;
                         default:
-                            queryParams.Add(new NameValue(keyValue[0], parm.Substring(keyValue[0].Length)));
+                            queryParams.Add(new NameValue(keyValue[0], parm.Substring(keyValue[0].Length + 1)));
                             break;
                     }
                 }
