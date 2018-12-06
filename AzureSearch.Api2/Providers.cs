@@ -215,15 +215,9 @@ namespace AzureSearch.Api
         }
         public static async Task<DocumentSearchResult<AzureSearchProviderRequestedFields>> GetProviders(int skip, int take, string universal, List<Filter> filters)
         {
-            SearchServiceClient serviceClient = new SearchServiceClient(
-                Environment.GetEnvironmentVariable("serviceName", EnvironmentVariableTarget.Process), 
-                new SearchCredentials
-                    (Environment.GetEnvironmentVariable("apiKey", EnvironmentVariableTarget.Process)
-                ));
-
             SearchParameters searchParameters = BuildAzureSearchParameters(skip, take, universal, filters);
 
-            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("providers");
+            ISearchIndexClient indexClient = AzureSearchConnectionCache.GetIndexClient(AzureSearchConnectionCache.IndexNames.providers);
             DocumentSearchResult<AzureSearchProviderRequestedFields> searchResults = 
                 await indexClient.Documents.SearchAsync<AzureSearchProviderRequestedFields>(universal, searchParameters);
             //List<SearchResult<AzureSearchProviderQueryResponse>> results = searchResults.Results.ToList();

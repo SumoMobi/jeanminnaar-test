@@ -9,7 +9,7 @@ namespace AzureSearch.Api
 {
     public class Names
     {
-        public static async Task<List<SuggestionResponse>> GetSuggestions(string azureSearchTerm, SearchServiceClient serviceClient)
+        public static async Task<List<SuggestionResponse>> GetSuggestions(string azureSearchTerm)
         {
             SearchParameters searchParameters = new SearchParameters
             {
@@ -23,7 +23,7 @@ namespace AzureSearch.Api
                 Top = 5
             };
 
-            ISearchIndexClient indexClient = serviceClient.Indexes.GetClient("names");
+            ISearchIndexClient indexClient = AzureSearchConnectionCache.GetIndexClient(AzureSearchConnectionCache.IndexNames.names);
             DocumentSearchResult<NameIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<NameIndexDataStructure>(azureSearchTerm, searchParameters);
             List<SearchResult<NameIndexDataStructure>> results = searchResults.Results.ToList();
 

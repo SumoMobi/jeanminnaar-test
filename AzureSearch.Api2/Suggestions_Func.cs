@@ -1,5 +1,4 @@
 using AzureSearch.Common;
-using Microsoft.Azure;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -22,6 +21,8 @@ namespace AzureSearch.Api
             ILogger log)
         {
             DateTime startDt = DateTime.Now;
+
+            ISearchIndexClient sc = AzureSearchConnectionCache.GetIndexClient(AzureSearchConnectionCache.IndexNames.conditions);
 
             SearchServiceClient serviceClient = new SearchServiceClient(
                 Environment.GetEnvironmentVariable("serviceName", EnvironmentVariableTarget.Process),
@@ -54,10 +55,10 @@ namespace AzureSearch.Api
             string azureSearchTerm = string.Join("+", sts);
 
             List<Task<List<SuggestionResponse>>> tasks = new List<Task<List<SuggestionResponse>>>();
-            tasks.Add(Conditions.GetSuggestions(azureSearchTerm, serviceClient));   //13K condition entries. (1.6MB)  Kick it off first.
-            tasks.Add(Names.GetSuggestions(azureSearchTerm, serviceClient));        //4K name entries. (0.6MB)
-            tasks.Add(Specialties.GetSuggestions(azureSearchTerm, serviceClient));  //2K specialty entries. (0.4MB)
-            tasks.Add(Insurances.GetSuggestions(azureSearchTerm, serviceClient));   //0.1K insurance entries. (0.1MB)
+            tasks.Add(Conditions.GetSuggestions(azureSearchTerm));   //13K condition entries. (1.6MB)  Kick it off first.
+            tasks.Add(Names.GetSuggestions(azureSearchTerm));        //4K name entries. (0.6MB)
+            tasks.Add(Specialties.GetSuggestions(azureSearchTerm));  //2K specialty entries. (0.4MB)
+            tasks.Add(Insurances.GetSuggestions(azureSearchTerm));   //0.1K insurance entries. (0.1MB)
 
             Task.WaitAll(tasks.ToArray());
 
