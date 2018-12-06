@@ -145,7 +145,7 @@ namespace AzureSearch.Api
             "zipCodes",
         };
 
-        public static SearchParameters BuildAzureSearchParameters(int skip, int take, string universal, List<Filter> filters)
+        public static SearchParameters BuildAzureSearchParameters(int skip, int take, string universal, List<Filter> filters, bool includeFacets, bool includeTotalCount)
         {
             List<string> facets = new List<string>()
             {
@@ -197,9 +197,9 @@ namespace AzureSearch.Api
 
             SearchParameters searchParameters = new SearchParameters
             {
-                Facets = facets.ToArray(),
+                Facets = (includeFacets ? facets.ToArray() : null),
                 Filter = filter,
-                IncludeTotalResultCount = true,
+                IncludeTotalResultCount = includeTotalCount,
                 OrderBy = new List<string>() { "searchRank", "randomNumber" }, //What about relevance/score?
                 QueryType = queryType,
                 SearchFields = searchFields,
@@ -213,9 +213,9 @@ namespace AzureSearch.Api
             };
             return searchParameters;
         }
-        public static async Task<DocumentSearchResult<AzureSearchProviderRequestedFields>> GetProviders(int skip, int take, string universal, List<Filter> filters)
+        public static async Task<DocumentSearchResult<AzureSearchProviderRequestedFields>> GetProviders(int skip, int take, string universal, List<Filter> filters, bool includeFacets, bool includeTotalCount)
         {
-            SearchParameters searchParameters = BuildAzureSearchParameters(skip, take, universal, filters);
+            SearchParameters searchParameters = BuildAzureSearchParameters(skip, take, universal, filters, includeFacets, includeTotalCount);
 
             ISearchIndexClient indexClient = AzureSearchConnectionCache.GetIndexClient(AzureSearchConnectionCache.IndexNames.providers);
             DocumentSearchResult<AzureSearchProviderRequestedFields> searchResults = 

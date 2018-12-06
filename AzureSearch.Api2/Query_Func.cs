@@ -102,10 +102,10 @@ namespace AzureSearch.Api
                 return response;
             }
 
-            int skip;int take; string seed; string universal; List<Filter> filters;
-            GetParameters(lowerQueryParams, out skip, out take, out seed, out universal, out filters);
+            int skip;int take; string seed; string universal; List<Filter> filters; bool includeFacets; bool includeTotalCount;
+            GetParameters(lowerQueryParams, out skip, out take, out seed, out universal, out filters, out includeFacets, out includeTotalCount);
 
-            DocumentSearchResult<AzureSearchProviderRequestedFields> results = await Providers.GetProviders(skip, take, universal, filters);
+            DocumentSearchResult<AzureSearchProviderRequestedFields> results = await Providers.GetProviders(skip, take, universal, filters, includeFacets, includeTotalCount);
 
             qr = new QueryResponse
             {
@@ -182,7 +182,7 @@ namespace AzureSearch.Api
             }
             return filters;
         }
-        public static void GetParameters(List<NameValue> parameters, out int skip, out int take, out string seed, out string universal, out List<Filter> filters)
+        public static void GetParameters(List<NameValue> parameters, out int skip, out int take, out string seed, out string universal, out List<Filter> filters, out bool includeFacets, out bool includeTotalCount)
         {
             //At this time all parameters are valid and all "key" type values are in lower case.
             skip = int.Parse(parameters.Single(p => p.Name.EmCompareIgnoreCase("skip")).Value);
@@ -191,23 +191,30 @@ namespace AzureSearch.Api
             //Get seed and universal parms if they are there.
             seed = null;
             universal = null;
+            includeFacets = false;
+            includeTotalCount = false;
+
             for (int k = 0; k < parameters.Count; k++)
             {
                 if (parameters[k].Name == "seed")
                 {
                     seed = parameters[k].Value;
-                    if (universal != null)
-                    {
-                        break;
-                    }
+                    continue;
                 }
                 if (parameters[k].Name == "universal")
                 {
                     universal = parameters[k].Value;
-                    if (seed != null)
-                    {
-                        break;
-                    }
+                    continue;
+                }
+                if (parameters[k].Name == "includefacets")
+                {
+                    includeFacets = (parameters[k].Value.EmCompareIgnoreCase("true") ? true : false);
+                    continue;
+                }
+                if (parameters[k].Name == "includetotalcount")
+                {
+                    includeTotalCount = (parameters[k].Value.EmCompareIgnoreCase("true") ? true : false);
+                    continue;
                 }
             }
 
@@ -239,7 +246,9 @@ namespace AzureSearch.Api
                 "filter",
                 "latitude",
                 "longitude",
-                "radius"
+                "radius",
+                "includefacets",
+                "includetotalcount"
             };
             //TODO still need to deal with lat/lon/radius everywhere.
             foreach(NameValue parm in queryParams)
@@ -312,6 +321,40 @@ namespace AzureSearch.Api
                     {
                         failureReasons.Add("'take' cannot exceed 100.");
                     }
+                }
+            }
+
+            //Validate the 'includeFacets' parameter.
+            entries = queryParams
+                .Where(q => q.Name == "includefacets")
+                .ToList();
+            if (entries.Count > 1)
+            {
+                failureReasons.Add("'includeFacets' parameter provided more than once.");
+            }
+            if (entries.Count == 1)
+            {
+                bool include;
+                if (bool.TryParse(entries[0].Value, out include) == false)
+                {
+                    failureReasons.Add($"The 'includeFacets' parameter value must have a boolean value.  Received {entries[0].Value}.");
+                }
+            }
+
+            //Validate the 'includeTotalCount' parameter.
+            entries = queryParams
+                .Where(q => q.Name == "includetotalcount")
+                .ToList();
+            if (entries.Count > 1)
+            {
+                failureReasons.Add("'includeTotalCount' parameter provided more than once.");
+            }
+            if (entries.Count == 1)
+            {
+                bool include;
+                if (bool.TryParse(entries[0].Value, out include) == false)
+                {
+                    failureReasons.Add($"The 'includeTotalCount' parameter value must have a boolean value.  Received {entries[0].Value}.");
                 }
             }
 
@@ -407,8 +450,8 @@ namespace AzureSearch.Api
                 string val = fil.Value.Substring(filterName.Length + 1);
                 if (!(val.EmCompareIgnoreCase("true") || val.EmCompareIgnoreCase("false")))
                 {
-                    if (filterName != "conditions_primarycare")
-                    {   //The search value will later in Providers.BuildParameters be converted to a boolean true value.
+                    if (filterName != "condition_primarycare")
+                    {   //The search value will later in GetFilters() be converted to a boolean true value.
                         failureReasons.Add($"'{fmi.FilterName}' has an invalid value, namely '{val}'.");
                     }
                 }

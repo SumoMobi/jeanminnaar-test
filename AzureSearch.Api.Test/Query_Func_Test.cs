@@ -259,7 +259,7 @@ namespace AzureSearch.Api.Test
         public void GetParms_Test01()
         {
             List<NameValue> parms;
-            int skip; int take; string seed; string universal; List<Filter> filters;
+            int skip; int take; string seed; string universal; List<Filter> filters; bool includeFacets; bool includeTotalCount;
 
             //Parameters in this case has to be a valid set.
 
@@ -270,12 +270,14 @@ namespace AzureSearch.Api.Test
                 new NameValue("universal", "15"),
             };
 
-            Query_Func.GetParameters(parms, out skip, out take, out seed, out universal, out filters);
+            Query_Func.GetParameters(parms, out skip, out take, out seed, out universal, out filters, out includeFacets, out includeTotalCount);
             Assert.AreEqual(5, skip);
             Assert.AreEqual(10, take);
             Assert.AreEqual("15", universal);
             Assert.AreEqual(null, seed);
             Assert.AreEqual(0, filters.Count);
+            Assert.AreEqual(false, includeFacets);
+            Assert.AreEqual(false, includeTotalCount);
 
             parms = new List<NameValue>()
             {
@@ -287,12 +289,14 @@ namespace AzureSearch.Api.Test
                 new NameValue("filter", "languages:English")
             };
 
-            Query_Func.GetParameters(parms, out skip, out take, out seed, out universal, out filters);
+            Query_Func.GetParameters(parms, out skip, out take, out seed, out universal, out filters, out includeFacets, out includeTotalCount);
             Assert.AreEqual(5, skip);
             Assert.AreEqual(10, take);
             Assert.AreEqual(null, universal);
             Assert.AreEqual("15", seed);
             Assert.AreEqual(2, filters.Count);
+            Assert.AreEqual(false, includeFacets);
+            Assert.AreEqual(false, includeTotalCount);
             int i = 0;
             Assert.AreEqual("conditions", filters[i].AzureIndexFieldName);
             Assert.AreEqual(1, filters[i].Values.Count);
@@ -305,6 +309,67 @@ namespace AzureSearch.Api.Test
             Assert.AreEqual("Hindy", filters[i].Values[v]);
             v++;
             Assert.AreEqual("English", filters[i].Values[v]);
+
+            parms = new List<NameValue>()
+            {
+                new NameValue("skip", "5"),
+                new NameValue("take", "10"),
+                new NameValue("seed", "15"),
+                new NameValue("filter", "condition_specialist:Cancer"),
+                new NameValue("filter", "languages:Hindy"),
+                new NameValue("filter", "languages:English"),
+                new NameValue("includefacets", "true")
+            };
+
+            Query_Func.GetParameters(parms, out skip, out take, out seed, out universal, out filters, out includeFacets, out includeTotalCount);
+            Assert.AreEqual(5, skip);
+            Assert.AreEqual(10, take);
+            Assert.AreEqual(null, universal);
+            Assert.AreEqual("15", seed);
+            Assert.AreEqual(2, filters.Count);
+            Assert.AreEqual(true, includeFacets);
+            Assert.AreEqual(false, includeTotalCount);
+
+            parms = new List<NameValue>()
+            {
+                new NameValue("skip", "5"),
+                new NameValue("take", "10"),
+                new NameValue("seed", "15"),
+                new NameValue("filter", "condition_specialist:Cancer"),
+                new NameValue("filter", "languages:Hindy"),
+                new NameValue("filter", "languages:English"),
+                new NameValue("includetotalcount", "true")
+            };
+
+            Query_Func.GetParameters(parms, out skip, out take, out seed, out universal, out filters, out includeFacets, out includeTotalCount);
+            Assert.AreEqual(5, skip);
+            Assert.AreEqual(10, take);
+            Assert.AreEqual(null, universal);
+            Assert.AreEqual("15", seed);
+            Assert.AreEqual(2, filters.Count);
+            Assert.AreEqual(false, includeFacets);
+            Assert.AreEqual(true, includeTotalCount);
+
+            parms = new List<NameValue>()
+            {
+                new NameValue("skip", "5"),
+                new NameValue("take", "10"),
+                new NameValue("seed", "15"),
+                new NameValue("filter", "condition_specialist:Cancer"),
+                new NameValue("filter", "languages:Hindy"),
+                new NameValue("filter", "languages:English"),
+                new NameValue("includefacets", "true"),
+                new NameValue("includetotalcount", "true")
+            };
+
+            Query_Func.GetParameters(parms, out skip, out take, out seed, out universal, out filters, out includeFacets, out includeTotalCount);
+            Assert.AreEqual(5, skip);
+            Assert.AreEqual(10, take);
+            Assert.AreEqual(null, universal);
+            Assert.AreEqual("15", seed);
+            Assert.AreEqual(2, filters.Count);
+            Assert.AreEqual(true, includeFacets);
+            Assert.AreEqual(true, includeTotalCount);
 
         }
     }

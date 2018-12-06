@@ -22,13 +22,6 @@ namespace AzureSearch.Api
         {
             DateTime startDt = DateTime.Now;
 
-            ISearchIndexClient sc = AzureSearchConnectionCache.GetIndexClient(AzureSearchConnectionCache.IndexNames.conditions);
-
-            SearchServiceClient serviceClient = new SearchServiceClient(
-                Environment.GetEnvironmentVariable("serviceName", EnvironmentVariableTarget.Process),
-                new SearchCredentials(Environment.GetEnvironmentVariable("apiKey", EnvironmentVariableTarget.Process))
-            );
-
             List<SuggestionResponse> suggestions = new List<SuggestionResponse>();
             HttpResponseMessage response;
 

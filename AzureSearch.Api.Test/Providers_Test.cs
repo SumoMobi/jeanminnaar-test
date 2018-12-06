@@ -13,7 +13,7 @@ namespace AzureSearch.Api.Test
             List<Filter> filters;
             SearchParameters sp;
 
-            sp = Providers.BuildAzureSearchParameters(10, 20, "cancer", new List<Filter>());
+            sp = Providers.BuildAzureSearchParameters(10, 20, "cancer", new List<Filter>(), true, true);
             Assert.AreEqual(7, sp.Facets.Count);
             Assert.AreEqual(null, sp.Filter);
             Assert.AreEqual(true, sp.IncludeTotalResultCount);
@@ -51,7 +51,7 @@ namespace AzureSearch.Api.Test
                     "Spanish"
                 }
             });
-            sp = Providers.BuildAzureSearchParameters(10, 20, "cancer", filters);
+            sp = Providers.BuildAzureSearchParameters(10, 20, "cancer", filters, true, true);
             Assert.AreEqual(7, sp.Facets.Count);
             Assert.AreEqual("(conditions/any(i: i eq 'cancer')) and (isMale eq true) and (languages/any(i: i eq 'English')) and (languages/any(i: i eq 'Spanish'))", sp.Filter);
             Assert.AreEqual(true, sp.IncludeTotalResultCount);
@@ -71,7 +71,7 @@ namespace AzureSearch.Api.Test
                     "true"
                 }
             });
-            sp = Providers.BuildAzureSearchParameters(10, 20, "cancer", filters);
+            sp = Providers.BuildAzureSearchParameters(10, 20, "cancer", filters, true, true);
             Assert.AreEqual(7, sp.Facets.Count);
             Assert.AreEqual("(conditions/any(i: i eq 'cancer')) and (isMale eq true) and (languages/any(i: i eq 'English')) and (languages/any(i: i eq 'Spanish')) and (isPrimaryCare eq true)", sp.Filter);
             Assert.AreEqual(true, sp.IncludeTotalResultCount);
@@ -82,6 +82,32 @@ namespace AzureSearch.Api.Test
             Assert.AreEqual(2, sp.Select.Count);
             Assert.AreEqual(10, sp.Skip);
             Assert.AreEqual(20, sp.Top);
+
+            sp = Providers.BuildAzureSearchParameters(10, 20, "cancer", filters, false, true);
+            Assert.AreEqual(null, sp.Facets);
+            Assert.AreEqual("(conditions/any(i: i eq 'cancer')) and (isMale eq true) and (languages/any(i: i eq 'English')) and (languages/any(i: i eq 'Spanish')) and (isPrimaryCare eq true)", sp.Filter);
+            Assert.AreEqual(true, sp.IncludeTotalResultCount);
+            Assert.AreEqual(2, sp.OrderBy.Count);
+            Assert.AreEqual(QueryType.Full, sp.QueryType);
+            Assert.AreEqual(6, sp.SearchFields.Count);
+            Assert.AreEqual(SearchMode.All, sp.SearchMode);
+            Assert.AreEqual(2, sp.Select.Count);
+            Assert.AreEqual(10, sp.Skip);
+            Assert.AreEqual(20, sp.Top);
+
+            sp = Providers.BuildAzureSearchParameters(10, 20, "cancer", filters, false, false);
+            Assert.AreEqual(null, sp.Facets);
+            Assert.AreEqual("(conditions/any(i: i eq 'cancer')) and (isMale eq true) and (languages/any(i: i eq 'English')) and (languages/any(i: i eq 'Spanish')) and (isPrimaryCare eq true)", sp.Filter);
+            Assert.AreEqual(false, sp.IncludeTotalResultCount);
+            Assert.AreEqual(2, sp.OrderBy.Count);
+            Assert.AreEqual(QueryType.Full, sp.QueryType);
+            Assert.AreEqual(6, sp.SearchFields.Count);
+            Assert.AreEqual(SearchMode.All, sp.SearchMode);
+            Assert.AreEqual(2, sp.Select.Count);
+            Assert.AreEqual(10, sp.Skip);
+            Assert.AreEqual(20, sp.Top);
+
+
         }
     }
 }

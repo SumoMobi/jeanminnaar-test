@@ -6,7 +6,7 @@ namespace AzureSearch.Api
 {
     public static class AzureSearchConnectionCache
     {
-        public enum IndexNames { conditions, insurances, locations, names, providers, specilties }
+        public enum IndexNames { conditions, insurances, locations, names, providers, specialties }
 
         private static MemoryCache _memoryCache = new MemoryCache(new MemoryCacheOptions());
 

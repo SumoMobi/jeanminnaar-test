@@ -23,7 +23,7 @@ namespace AzureSearch.Api
                 Top = 5
             };
 
-            ISearchIndexClient indexClient = AzureSearchConnectionCache.GetIndexClient(AzureSearchConnectionCache.IndexNames.specilties);
+            ISearchIndexClient indexClient = AzureSearchConnectionCache.GetIndexClient(AzureSearchConnectionCache.IndexNames.specialties);
             DocumentSearchResult<SpecialtyIndexDataStructure> searchResults = await indexClient.Documents.SearchAsync<SpecialtyIndexDataStructure>(azureSearchTerm, searchParameters);
             List<SearchResult<SpecialtyIndexDataStructure>> results = searchResults.Results.ToList();
             List<SuggestionResponse> suggestions = new List<SuggestionResponse>();
