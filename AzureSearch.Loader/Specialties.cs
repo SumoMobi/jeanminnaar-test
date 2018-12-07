@@ -200,7 +200,15 @@ namespace AzureSearch.Loader
                                 EntryType = EntryTypes.Alias,
                                 Specialty = s.specialty
                             });
+                            continue;
                         }
+                        //Specialty and alias is the same.
+                        specialtiesAliasesAndTypes.Add(new SpecialtyAliasAndType
+                        {
+                            Alias = a.name,
+                            EntryType = EntryTypes.Specialty,
+                            Specialty = s.specialty
+                        });
                     }
                 }
             }
