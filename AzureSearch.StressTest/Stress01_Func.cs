@@ -1,22 +1,26 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using AzureSearch.Api;
 using AzureSearch.Common;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Search.Models;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AzureSearch.StressTest
 {
+    public class PerformanceResult
+    {
+        public double SuggestionTime { get; set; }
+        public double SearchTime { get; set; }
+    }
     public static class Stress01_Func
     {
         public static List<SearchStat> searchStats = new List<SearchStat>()
@@ -82,29 +86,34 @@ namespace AzureSearch.StressTest
                 suggestionSearch = "Psychiatr*"
             },
         };
+        public static DateTime stopAfterThisDt;
 
         [FunctionName("Stress01")]
         public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/azuresearch/stresstest/threads/{threads}")] HttpRequest req,
-            int threads,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/azuresearch/stresstest/numberOfUsers/{users}/secondsToRun/{seconds}")] HttpRequest req,
+            int users,
+            int seconds,
             ILogger log)
         {
             try
             {
-                DateTime startDt = DateTime.Now;
                 List<SearchStat> searchList = GetSearchList();
-                List<Task> tasks = new List<Task>(threads);
+                List<Task> tasks = new List<Task>(users);
                 Random random = new Random(DateTime.Now.Millisecond);
-                for (int i = 0; i < threads; i++)
+                ConcurrentBag<PerformanceResult> performanceResults = new ConcurrentBag<PerformanceResult>();
+
+                stopAfterThisDt = DateTime.Now + new TimeSpan(0, 0, seconds);
+
+                for (int i = 0; i < users; i++)
                 {
-                    //Randomly pick a search criteria entry.
+                    //Randomly pick a search criteria entry for the user.
                     int r = random.Next(0, searchList.Count - 1);
-                    tasks.Add(RunThread(searchList[r]));
+                    tasks.Add(SimulateUser(searchList[r], performanceResults));
                 }
                 Task.WaitAll(tasks.ToArray());
                 return new HttpResponseMessage
                 {
-                    Content = new StringContent($"{threads} threads.  {(DateTime.Now - startDt).TotalMilliseconds.ToString()} milliseconds", Encoding.UTF8, "text/plain")
+                    Content = new StringContent(JsonConvert.SerializeObject(performanceResults), System.Text.Encoding.UTF8, "application/json")
                 };
             }
             catch (Exception ex)
@@ -116,13 +125,54 @@ namespace AzureSearch.StressTest
             }
         }
 
-        private static async Task RunThread(SearchStat searchStat)
+        private static async Task SimulateUser(SearchStat searchStat, ConcurrentBag<PerformanceResult> performanceResults)
         {
             await Task.Run(() =>
             {
-                GetSuggestions(searchStat.suggestionSearch);
+                Random r = new Random(DateTime.Now.Millisecond);
+                List<Filter> filters = new List<Filter>()
+                {
+                    new Filter
+                    {
+                        AzureIndexFieldName = "specialties",
+                        Values = new List<string>()
+                        {
+                            searchStat.specialtySearch
+                        }
+                    }
+                };
+
+                while (true)
+                {
+                    PerformanceResult pr = new PerformanceResult();
+
+                    //Suggestions
+                    DateTime startDt = DateTime.Now;
+                    GetSuggestions(searchStat.suggestionSearch);
+                    pr.SuggestionTime = (DateTime.Now - startDt).TotalMilliseconds;
+                    Thread.Sleep(r.Next(1000, 2000));
+
+                    //Providers
+                    startDt = DateTime.Now;
+                    Task<DocumentSearchResult<AzureSearchProviderRequestedFields>> task = Providers.GetProviders(0, 25, null, filters, false, false);
+                    task.Wait();
+                    pr.SearchTime = (DateTime.Now - startDt).TotalMilliseconds;
+                    Thread.Sleep(r.Next(1000, 2000));
+
+                    performanceResults.Add(pr);
+
+                    if (DateTime.Now > stopAfterThisDt)
+                    {
+                        break;
+                    }
+                }
             });
         }
+        //private static void GetProviders(List<Filter> filters)
+        //{
+        //    Task<DocumentSearchResult<AzureSearchProviderRequestedFields>> task = Providers.GetProviders(0, 25, null, filters, false, false);
+        //    task.Wait();
+        //}
         private static void GetSuggestions(string searchTerm)
         {
             List<Task<List<SuggestionResponse>>> tasks = new List<Task<List<SuggestionResponse>>>(4);

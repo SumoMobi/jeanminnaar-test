@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.Api2", "AzureSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.PerformanceInsideCloud2", "AzureSearch.PerformanceInsideCloud2\AzureSearch.PerformanceInsideCloud2.csproj", "{3925B8A8-49C8-4E08-BF5D-7497F83BBDD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSearch.StressTest", "AzureSearch.StressTest\AzureSearch.StressTest.csproj", "{C6FA102A-94EA-4896-BCEC-6DAEC24155A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.StressTest", "AzureSearch.StressTest\AzureSearch.StressTest.csproj", "{C6FA102A-94EA-4896-BCEC-6DAEC24155A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSearch.RefreshComplete", "AzureSearch.RefreshComplete\AzureSearch.RefreshComplete.csproj", "{61EF1FC0-604B-4BD2-BEF5-E43DB6AB4B8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{C6FA102A-94EA-4896-BCEC-6DAEC24155A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6FA102A-94EA-4896-BCEC-6DAEC24155A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6FA102A-94EA-4896-BCEC-6DAEC24155A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61EF1FC0-604B-4BD2-BEF5-E43DB6AB4B8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61EF1FC0-604B-4BD2-BEF5-E43DB6AB4B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61EF1FC0-604B-4BD2-BEF5-E43DB6AB4B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61EF1FC0-604B-4BD2-BEF5-E43DB6AB4B8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
