@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.PerformanceInsi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.StressTest", "AzureSearch.StressTest\AzureSearch.StressTest.csproj", "{C6FA102A-94EA-4896-BCEC-6DAEC24155A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSearch.RefreshComplete", "AzureSearch.RefreshComplete\AzureSearch.RefreshComplete.csproj", "{61EF1FC0-604B-4BD2-BEF5-E43DB6AB4B8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSearch.RefreshComplete", "AzureSearch.RefreshComplete\AzureSearch.RefreshComplete.csproj", "{61EF1FC0-604B-4BD2-BEF5-E43DB6AB4B8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

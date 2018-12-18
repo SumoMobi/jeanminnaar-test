@@ -73,6 +73,9 @@ namespace AzureSearch.Exe
                 case "pbpn":
                     Performance.BlobStorageNarrow.GetDocumentsInParallel(storageAccountKey, storageAccountName);
                     break;
+                case "bbr":
+                    Performance.BlobStorageNarrow.GetDocumentsInParallel(storageAccountKey, storageAccountName);
+                    break;
                 default:
                     ShowHelp();
                     break;
