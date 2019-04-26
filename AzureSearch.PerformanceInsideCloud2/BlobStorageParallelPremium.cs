@@ -41,12 +41,14 @@ namespace AzureSearch.PerformanceInsideCloud
             {
                 foreach (string id in ids)
                 {
-                    CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"?/{id}.json");
+                    CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"ky-2019-04-25-16-00-00-0387-Utc/{id}.json");
+//                    string text = cloudBlockBlob.DownloadTextAsync().Result;
                     tasks.Add(cloudBlockBlob.DownloadTextAsync());
                 }
             }
 
             Task.WaitAll(tasks.ToArray());
+            DateTime dt = DateTime.Now;
             List<KyruusDataStructure> providers = new List<KyruusDataStructure>();
             foreach (Task<string> task in tasks)
             {
@@ -55,7 +57,7 @@ namespace AzureSearch.PerformanceInsideCloud
             }
             return req.CreateResponse(
                 HttpStatusCode.OK,
-                $"{repetitions} repetitions in {nameof(BlobStorageSerial)}->{executionContext.FunctionName}(): {(DateTime.Now - startTime).TotalMilliseconds}, per repetition {(DateTime.Now - startTime).TotalMilliseconds / repetitions}, number of providers returned in total {providers.Count}");
+                $"{repetitions} repetitions in {nameof(BlobStorageParallelPremuim)}->{executionContext.FunctionName}(): {(DateTime.Now - startTime).TotalMilliseconds}, per repetition {(DateTime.Now - startTime).TotalMilliseconds / repetitions}, number of providers returned in total {providers.Count}.  Deserialize time {(DateTime.Now - dt).TotalMilliseconds}");
         }
     }
 }

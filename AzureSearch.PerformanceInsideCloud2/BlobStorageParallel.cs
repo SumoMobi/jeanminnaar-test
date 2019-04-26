@@ -41,7 +41,7 @@ namespace AzureSearch.PerformanceInsideCloud
             {
                 foreach (string id in ids)
                 {
-                    CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"p-2018-11-12-15-00-01-000726-Utc-4d41468f-51d7-4c4f-9698-24b6637b7eb5/{id}.json");
+                    CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference($"ky-2019-04-25-16-00-00-0387-Utc/{id}.json");
                     tasks.Add(cloudBlockBlob.DownloadTextAsync());
                 }
             }

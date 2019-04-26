@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using WebApp1.Models;
 
 namespace WebApp1.Controllers
@@ -14,6 +12,7 @@ namespace WebApp1.Controllers
     {
         public IActionResult Index()
         {
+            //List<System.Security.Claims.Claim> claims = HttpContext.User.Claims.ToList();
             return View();
         }
 
