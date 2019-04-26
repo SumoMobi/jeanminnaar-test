@@ -39,13 +39,14 @@ namespace AzureSearch.PerformanceInsideCloud
                 "c.is_primary_care, c.is_specialty_care, c.languages,c.locations, c.last_modified, c.last_updated, c.name, c.network_affiliations, c.networks, " + /*c.office_hours,*/
                 "c.preferred_name, c.provider_email, c.provider_type, " +/*c.rating_average, c.rating_count,*/ "c.scope_of_practice, c.specializing_in, c.specialties, c.training, " +
                 "c.video_url, c.web_phone_number, c.years_in_practice FROM c WHERE c.id = ";
-            List<Task> tasks = new List<Task>();
+            List<Task<ProviderNarrow>> tasks = new List<Task<ProviderNarrow>>();
             for (int r = 0; r < repetitions; r++)
             {
                 for (int i = 0; i < Common.IdsList.Count; i++)
                 {
                     string sql2 = $"{sql}'{Common.IdsList[i]}'";
-                    tasks.Add(Task.Run(() => documentClient.CreateDocumentQuery<ProviderNarrow>(collectionUri, sql2, options)));
+                    //ProviderNarrow pn = documentClient.CreateDocumentQuery<ProviderNarrow>(collectionUri, sql2, options).ToList().First();
+                    tasks.Add(Task.Run<ProviderNarrow>(() => documentClient.CreateDocumentQuery<ProviderNarrow>(collectionUri, sql2, options).ToList().First()));
                 }
             }
             Task.WaitAll(tasks.ToArray());
