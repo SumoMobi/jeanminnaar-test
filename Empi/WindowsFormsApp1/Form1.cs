@@ -17,7 +17,7 @@ namespace WindowsFormsApp1
             InitializeComponent();
         }
 
-        public Form1(string firstName, string lastName, string dobMonth, string dobDay, string dobYear, string url)
+        public Form1(string firstName, string lastName, string dobMonth, string dobDay, string dobYear, string url, bool isAlreadyRunning)
         {
             InitializeComponent();
             this.firstName.Text = firstName;
@@ -26,6 +26,7 @@ namespace WindowsFormsApp1
             this.dobMonth.Text = dobMonth;
             this.dobYear.Text = dobYear;
             this.url.Text = url;
+            this.isAlreadyRunning.Checked = isAlreadyRunning;
         }
     }
 }

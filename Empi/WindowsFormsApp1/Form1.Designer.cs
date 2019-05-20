@@ -38,6 +38,7 @@
             this.dobYear = new System.Windows.Forms.TextBox();
             this.url = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.isAlreadyRunning = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // firstName
@@ -119,11 +120,22 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "URL:";
             // 
+            // isAlreadyRunning
+            // 
+            this.isAlreadyRunning.AutoSize = true;
+            this.isAlreadyRunning.Location = new System.Drawing.Point(88, 226);
+            this.isAlreadyRunning.Name = "isAlreadyRunning";
+            this.isAlreadyRunning.Size = new System.Drawing.Size(115, 17);
+            this.isAlreadyRunning.TabIndex = 10;
+            this.isAlreadyRunning.Text = "Is Already Running";
+            this.isAlreadyRunning.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.isAlreadyRunning);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.url);
             this.Controls.Add(this.dobYear);
@@ -153,6 +165,7 @@
         private System.Windows.Forms.TextBox dobYear;
         private System.Windows.Forms.TextBox url;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox isAlreadyRunning;
     }
 }
 
