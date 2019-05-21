@@ -39,6 +39,7 @@
             this.url = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.isAlreadyRunning = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // firstName
@@ -110,6 +111,7 @@
             this.url.ReadOnly = true;
             this.url.Size = new System.Drawing.Size(514, 20);
             this.url.TabIndex = 8;
+            this.url.Visible = false;
             // 
             // label4
             // 
@@ -119,6 +121,7 @@
             this.label4.Size = new System.Drawing.Size(32, 13);
             this.label4.TabIndex = 9;
             this.label4.Text = "URL:";
+            this.label4.Visible = false;
             // 
             // isAlreadyRunning
             // 
@@ -129,12 +132,23 @@
             this.isAlreadyRunning.TabIndex = 10;
             this.isAlreadyRunning.Text = "Is Already Running";
             this.isAlreadyRunning.UseVisualStyleBackColor = true;
+            this.isAlreadyRunning.Visible = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(88, 131);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 11;
+            this.button1.Text = "Search";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.isAlreadyRunning);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.url);
@@ -166,6 +180,7 @@
         private System.Windows.Forms.TextBox url;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox isAlreadyRunning;
+        private System.Windows.Forms.Button button1;
     }
 }
 

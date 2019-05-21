@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WindowsFormsApp1
@@ -38,6 +35,7 @@ namespace WindowsFormsApp1
             Process currentProcess = GetCurrentProcess();
             if (currentProcess != null)
             {   //There is another one running, close it
+                //Form currentForm = (Form)Form.FromHandle(currentProcess.MainWindowHandle);
                 currentProcess.CloseMainWindow();
                 currentProcess.WaitForExit();
             }
@@ -123,8 +121,8 @@ namespace WindowsFormsApp1
         /// </summary>
         private static void SwitchToCurrentInstance(IntPtr currentWindowHandle)
         {
-            // Restore window if minimised. Do not restore if already in
-            // normal or maximised window state, since we don't want to
+            // Restore window if minimized. Do not restore if already in
+            // normal or maximized window state, since we don't want to
             // change the current state of the window.
             if (IsIconic(currentWindowHandle) != 0)
             {
